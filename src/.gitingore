@@ -1,2 +1,3 @@
 *.o
+.*
 iperf_clone
