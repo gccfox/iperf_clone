@@ -5,3 +5,9 @@ struct model_options {
 	int port;
 };
 
+
+struct configure_struct{
+    char* ip;
+    int numberOfPackages; 
+};
+

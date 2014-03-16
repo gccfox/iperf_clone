@@ -7,8 +7,12 @@
 *	mode
 */
 class TcpClientModel : public Model {
-	public:
+    private:
+        configure_struct conf;
+
+    public:
 		TcpClientModel();
+        void defaultConfigure();
 		virtual void run();
 		virtual void configure(struct configure_struct *);
 };
