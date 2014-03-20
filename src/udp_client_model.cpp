@@ -7,6 +7,7 @@
 */
 UdpClientModel::UdpClientModel() {
 	printf("Udp client created!\n");
+	packet_count = DEFAULT_PACKET_COUNT;
 }
 
 
@@ -16,9 +17,10 @@ UdpClientModel::UdpClientModel() {
 */
 void UdpClientModel::run() {
 	initSocket();
-	startClient(); 
+//	startClient(); 
+	sendInitPacket();
+	sendDataStream();
 }
-
 
 
 /*
@@ -32,7 +34,6 @@ void UdpClientModel::configure(struct configure_struct *configuration_struct) {
 	}
 
 }
-
 
 
 /*
@@ -92,4 +93,63 @@ void UdpClientModel::startClient() {
 		printf("UDP_client: sending error: error_code: %d\n", errno);
 		exit(1);
 	}
+}
+
+
+/*
+*	Send init data to server
+*/
+void UdpClientModel::sendInitPacket() {
+	struct connection_init_data *init_packet = formInitPacket();
+	printf("UDP_client: sending init packet!\n");
+
+	//---Send packet
+	if (sendto(client_socket, (void *)init_packet, sizeof(struct connection_init_data), 0,
+		(struct sockaddr *)&client_socket_config, sizeof(client_socket_config)) < 0) {
+		printf("UDP_client: init data send error: error_code: %d\n", errno);
+		exit(1);
+	}
+	printf("UDP_client: init packet sent..\n");
+}
+
+
+/*
+*	From init packet and
+*	return pointer to them
+*/
+struct connection_init_data* UdpClientModel::formInitPacket() {
+	struct connection_init_data *result = new connection_init_data;
+	result->packet_count = packet_count;
+	memset(result->client_name, 0, sizeof(char) * CLIENT_NAME_SIZE);
+	strcpy(result->client_name, DEFAULT_UDP_CLIENT_NAME); 
+	return result;
+}
+
+
+/*
+*	Starts to flood net by packets
+*
+*/
+void UdpClientModel::sendDataStream() {
+	printf("UDP_client: start data stream\n");
+	for (int i = 0; i < packet_count; i++) {
+		sendDataPacket();
+		printf("UDP_client: packet sent..\n");
+	}
+	printf("UDP_client: end data stream\n");
+}
+
+
+/*
+*	Send simple data packet
+*/
+void UdpClientModel::sendDataPacket() {
+	struct udp_data_packet	packet;
+
+	//---Send data
+	if (sendto(client_socket, (void *)&packet, sizeof(struct udp_data_packet), 0,
+		(struct sockaddr *)&client_socket_config, sizeof(client_socket_config)) < 0) {
+		printf("UDP_client: flood packet send error: error_code: %d\n", errno);
+		exit(1);
+	} 
 }
