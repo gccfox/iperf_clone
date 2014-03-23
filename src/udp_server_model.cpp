@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <fcntl.h>
 #include "udp_server_model.h"
 
 /*
@@ -28,13 +29,15 @@ void UdpServerModel::run() {
 	safeReceiveInitPacket();
 
 	printf("UDP_server: started..\n"); 
-	initDataSocket();	
-//	receiveInitPacket();
-	receiveDataStream(); 
+	//receiveDataStream(); 
 
-	//---Get term packet
+    //---Start stread for udp data
+	initDataSocket();	
+    startDataReceiveThread();
+
+    //---Get term packet
 	safeReceiveTerminationPacket();
-//startSystemDataServer();
+    pthread_cancel(flood_data_thread);
 }
 
 
@@ -87,6 +90,7 @@ int UdpServerModel::createDataSocket() {
 		printf("UDP_server: data socket creation error! Error code: %d\n", errno);
 		exit(1);
 	}
+    fcntl(socket_fd, F_SETFL, O_NONBLOCK);
 	return socket_fd;
 }
 
@@ -154,24 +158,31 @@ void UdpServerModel::startSystemDataServer() {
 
 
 /*
-*	Start packet processing
-*
+*	Start packet processing, this method is static
+*   just for C threads compatibility. UNSAFE
+*   @obj    is and pointer to "this"
 */
-void UdpServerModel::startDataServer() {
-	/*char 	message_buffer[UDP_PACKET_SIZE];
-	printf("UDP_server: started..\n"); 
+void *UdpServerModel::startDataServer(void *obj) {
+    UdpServerModel *this_object = static_cast<UdpServerModel *>(obj);
 
-	memset(message_buffer, 0, sizeof(char) * UDP_PACKET_SIZE);
-	if (recvfrom(flood_data_socket, message_buffer, UDP_PACKET_SIZE, 0, NULL, NULL) < 0) {
-		printf("UDP_server: message receive error! Error code %d\n", errno);
-		exit(3);
-	}
+	printf("UDP_server: udp serving in thread started..\n"); 
+	//this_object->initDataSocket();	
+	this_object->receiveDataStream(); 
+    return NULL;
+}
 
-	printf("Udp_server: catched message: '%s'\n", message_buffer);*/
-	printf("UDP_server: started..\n"); 
-	initDataSocket();	
-	receiveInitPacket();
-	receiveDataStream(); 
+
+/**
+  *     Creates thread, that will listen UDP socket to
+  *     receive data
+  *
+  */
+void UdpServerModel::startDataReceiveThread() {
+    int thread_err_code = 0;
+    if (thread_err_code = pthread_create(&flood_data_thread, NULL, startDataServer, static_cast<void *>(this))) {
+            printf("UDP_server: flood receiving thread: creation error!%d\n", errno);
+            exit(1);
+    }
 }
 
 
@@ -197,6 +208,34 @@ void UdpServerModel::receiveInitPacket() {
 
 
 /*
+*	Receives all data stream
+*
+*/
+void UdpServerModel::receiveDataStream() {
+    //---Create list of socket decriptors
+    fd_set              udp_socket_set;
+    struct timeval      udp_socket_sleep_interval;
+    FD_SET(receive_socket, &udp_socket_set);
+    udp_socket_sleep_interval.tv_sec = 0;
+    udp_socket_sleep_interval.tv_usec = 400;
+
+
+	printf("UDP_server: start receiving data stream, expected %d packets\n", packet_count);
+
+	for (int i = 0; i < packet_count; i++) {
+		printf("UDP_server: wait for packet %d!\n", i);
+        //---Checks fulfilling of socket
+        select(1, &udp_socket_set, NULL, NULL, &udp_socket_sleep_interval);
+        if (FD_ISSET(receive_socket, &udp_socket_set)) {
+    		receiveDataPacket();
+        }
+	}
+	printf("UDP_server: end of data stream\n");
+}
+
+
+
+/*
 *	Receive udp data packet
 */
 void UdpServerModel::receiveDataPacket() {
@@ -212,20 +251,6 @@ void UdpServerModel::receiveDataPacket() {
 	printf("UDP_server: data received: IP %s\n", inet_ntoa(packet_info.sin_addr));
 }
 		
-
-/*
-*	Receives all data stream
-*
-*/
-void UdpServerModel::receiveDataStream() {
-	printf("UDP_server: start receiving data stream, expected %d packets\n", packet_count);
-
-	for (int i = 0; i < packet_count; i++) {
-		printf("UDP_server: wait for packet %d!\n", i);
-		receiveDataPacket();
-	}
-	printf("UDP_server: end of data stream\n");
-}
 		
 /*
 *	Receives init packet with TCP protocol

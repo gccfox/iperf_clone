@@ -1,10 +1,11 @@
 #pragma once
 #include "model.h"
 #include "udp_data_types.h"
+#include <pthread.h>
 /*#ifndef MODEL_H
 	#include "model.h"
 #endif*/
-#define SYSTEM_SERVER_BACKLOG_SIZE		2
+#define SYSTEM_SERVER_BACKLOG_SIZE		1
 
 /*
 *	This model characterize Udp Server
@@ -20,6 +21,9 @@ class UdpServerModel : public Model {
 	struct sockaddr_in			system_data_socket_config;
 	struct configure_struct 	*server_model_config;
 	struct connection_init_data	init_data_packet;
+
+    //---data receiver thread 
+    pthread_t                   flood_data_thread;
 	
 	public:
 		UdpServerModel();
@@ -33,7 +37,9 @@ class UdpServerModel : public Model {
 		void initDataSocket();
 		int createDataSocket();
 		void configureDataSocket();
-		void startDataServer();
+        void startDataReceiveThread();
+        //---Just for C compatibility its method is static
+		static void *startDataServer(void *argv);
 		void receiveInitPacket();
 		void receiveDataPacket();
 		void receiveDataStream();

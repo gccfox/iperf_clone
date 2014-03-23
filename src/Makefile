@@ -1,6 +1,6 @@
 CC = gcc
 all: main controller models views
-	$(CC) main.o concrete_controller.o tcp_client_model.o udp_client_model.o tcp_server_model.o udp_server_model.o error_view.o -o iperf_clone -lstdc++
+	$(CC) main.o concrete_controller.o tcp_client_model.o udp_client_model.o tcp_server_model.o udp_server_model.o error_view.o -o iperf_clone -lstdc++ -lpthread
 
 main: main.cpp controller
 	$(CC) -c main.cpp

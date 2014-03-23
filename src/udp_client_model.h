@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "model.h"
 #include "udp_data_types.h"
-#define DEFAULT_PACKET_COUNT		20
+#define DEFAULT_PACKET_COUNT		200
 #define DEFAULT_UDP_CLIENT_NAME		"Dexter"
 
 /*
