@@ -16,10 +16,25 @@ UdpServerModel::UdpServerModel() {
 *	Place your code here
 */
 void UdpServerModel::run() {
-	initDataSocket();	
+	//initDataSocket();	
 //	startServer();
-	receiveInitPacket();
-	receiveDataStream();
+//	receiveInitPacket();
+//	receiveDataStream();
+	printf("System data server on air..\n");
+	initSystemDataSocket();
+	listen(system_data_socket, SYSTEM_SERVER_BACKLOG_SIZE);
+
+	//---Wait for connection
+	safeReceiveInitPacket();
+
+	printf("UDP_server: started..\n"); 
+	initDataSocket();	
+//	receiveInitPacket();
+	receiveDataStream(); 
+
+	//---Get term packet
+	safeReceiveTerminationPacket();
+//startSystemDataServer();
 }
 
 
@@ -45,7 +60,7 @@ void UdpServerModel::configure(struct configure_struct *configuration_struct) {
 void UdpServerModel::initDataSocket() {
 	flood_data_socket = createDataSocket();
 	configureDataSocket();
-	bindDataSocket(flood_data_socket, &flood_data_socket_config); 
+	bindSocket(flood_data_socket, &flood_data_socket_config); 
 }
 
 
@@ -57,7 +72,7 @@ void UdpServerModel::initDataSocket() {
 void UdpServerModel::initSystemDataSocket() {
 	system_data_socket = createSystemDataSocket();
 	configureSystemDataSocket();
-	bindSystemDataSocket(system_data_socket, &system_data_socket_config); 
+	bindSocket(system_data_socket, &system_data_socket_config); 
 }
 
 
@@ -118,24 +133,12 @@ void UdpServerModel::configureSystemDataSocket() {
 /*
 *	Binds socket
 */
-void UdpServerModel::bindDataSocket(int socket, struct sockaddr_in *socket_config) {
+void UdpServerModel::bindSocket(int socket, struct sockaddr_in *socket_config) {
 	if (bind(socket, (struct sockaddr *)socket_config, sizeof(*socket_config)) < 0) {
 		printf("UDP_server: socket bind error! Error code %d\n", errno);
 		exit(2);
 	}
 }
-
-
-/*
-*	Connect system socket
-*/
-void UdpServerModel::bindSystemDataSocket(int socket, struct sockaddr_in *socket_config) {
-	if (bind(socket, (struct sockaddr *)socket_config, sizeof(*socket_config)) < 0) {
-		printf("UDP_server: socket bind error! Error code %d\n", errno);
-		exit(2);
-	}
-}
-
 
 
 /*
@@ -144,6 +147,9 @@ void UdpServerModel::bindSystemDataSocket(int socket, struct sockaddr_in *socket
 */
 void UdpServerModel::startSystemDataServer() {
 	printf("System data server on air..\n");
+	initSystemDataSocket();
+	listen(system_data_socket, SYSTEM_SERVER_BACKLOG_SIZE);
+	safeReceiveInitPacket();
 }
 
 
@@ -215,7 +221,55 @@ void UdpServerModel::receiveDataStream() {
 	printf("UDP_server: start receiving data stream, expected %d packets\n", packet_count);
 
 	for (int i = 0; i < packet_count; i++) {
+		printf("UDP_server: wait for packet %d!\n", i);
 		receiveDataPacket();
 	}
 	printf("UDP_server: end of data stream\n");
+}
+		
+/*
+*	Receives init packet with TCP protocol
+*
+*/
+void UdpServerModel::safeReceiveInitPacket() {
+	//int receive_socket;
+	if ((receive_socket = accept(system_data_socket, NULL, NULL)) < 0) {
+		printf("UDP_server: system socket: packet socket creation error!%d\n", errno);
+		exit(2);
+	}
+
+	if (recv(receive_socket, (void *)&init_data_packet, sizeof(struct connection_init_data), 0) < 0) {
+		printf("UDP_server: system socket: receive init data error! %d\n", errno);
+		exit(2);
+	}
+	
+	printf("Udp_server: get init packet packet count: %d client name: %s\n", init_data_packet.packet_count, init_data_packet.client_name);
+
+	//---Save expected count of stream
+	packet_count = init_data_packet.packet_count;
+}
+
+
+/*
+*	Receives termination packet
+*/
+void UdpServerModel::safeReceiveTerminationPacket() {
+//	int 								receive_socket;
+	struct connection_terminate_data	terminate_packet;
+
+	//---Get socket
+/*	if ((receive_socket = accept(system_data_socket, NULL, NULL)) < 0) {
+		printf("UDP_server: system socket: packet socket creation error!%d\n", errno);
+		exit(2);
+	}*/
+
+	printf("UDP_server: catch input socket!\n");
+
+	//---Receive terminate packet
+	if (recv(receive_socket, (void *)&terminate_packet, sizeof(struct connection_terminate_data), 0) < 0) {
+		printf("UDP_server: system socket: receive init data error! %d\n", errno);
+		exit(2);
+	}
+	
+	printf("Udp_server: get termination packet with code %d\n", terminate_packet.termination_code);
 }
