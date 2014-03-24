@@ -1,4 +1,4 @@
-#include "tcp_server_model.h"
+//#include "tcp_server_model.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -26,12 +26,12 @@ struct msg{
 /*
 *	Just a constructor 
 */
-TcpServerModel::TcpServerModel() {
-	printf("Tcp Server created!\n");
-}
+//TcpServerModel::TcpServerModel() {
+//	printf("Tcp Server created!\n");
+//}
 
 
-void TcpServerModel::TcpSocketCreating(int &lis,struct sockaddr_in add) {
+void TcpSocketCreating(int &lis,struct sockaddr_in add) {
 	lis = socket(AF_INET, SOCK_STREAM, 0);//descriptor of listening socket
     
 	if(lis < 0){ //catching error in creating of socket
@@ -52,7 +52,7 @@ void TcpServerModel::TcpSocketCreating(int &lis,struct sockaddr_in add) {
 }
 
 
-void TcpServerModel::TcpAccepting(int &lis,int &s, clock_t ti1, clock_t ti2, struct msg b)
+void TcpAccepting(int &lis,int &s, clock_t ti1, clock_t ti2, struct msg b)
 {
 
 	int bytes_read;
@@ -97,7 +97,7 @@ void TcpServerModel::TcpAccepting(int &lis,int &s, clock_t ti1, clock_t ti2, str
 *	Main function of tcp Server
 *	Place your code here
 */
-void TcpServerModel::run() {
+int main() {
 	//TcpServerModel::configure();
 	clock_t t1, t2;
 	int y,i,k;
@@ -109,12 +109,13 @@ void TcpServerModel::run() {
 	k = 0;
 	t1 = clock();
 
-	TcpServerModel::TcpSocketCreating(listener, addr);
+	TcpSocketCreating(listener, addr);
     listen(listener, 1);//Listening of port
 
     printf("Listening...\n");
 
-	TcpServerModel::TcpAccepting(listener,sock,t1,t2,buf);   
+	TcpAccepting(listener,sock,t1,t2,buf);   
+return 1;
 }
 
 
@@ -122,6 +123,6 @@ void TcpServerModel::run() {
 *	This function provides pre configuration
 *	Do not touch now
 */
-void TcpServerModel::configure(struct configure_struct *) {
-
-}
+//void TcpServerModel::configure(struct configure_struct *) {
+//
+//}
