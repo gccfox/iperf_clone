@@ -13,4 +13,6 @@ class ConcreteController : public Controller {
 		~ConcreteController();
 		void run(int argc, char **argv);
 		Model *get_model();
+		struct conf{};
+
 };
