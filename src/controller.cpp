@@ -2,18 +2,23 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <getopt.h>
-//#include "concrete_controller.h" 
-
-//Structure wich must fuck the iperf out
-struct conf
+#include <iostream>
+//#include <cstring>
+#include "struct.h"
+#pragma once
+using namespace std;
+int fill_default(model_options &m);
+int fill_default(model_options &m)
 {
-	char* port;
-	//char ip[];	
-	int server_mode; //1-on 0-off
-	int udp_mode; //1-on 0-off
-	int loss; //socket what was fuc*ed in process
-	char* count; //count of pockets
-	char* size; //size of each(?) pocket
+	m.server_mode = 0;
+	m.loss = 0;
+	m.count = 0;
+	m.size = 0;
+	m.model_type = 0;
+	m.port = 3409;
+	m.ip = "127.0.0.1";
+ //	strcpy(m.ip,s.c_str());
+	return 0;
 };
 /*
 //---Controller constructor
@@ -34,28 +39,45 @@ ConcreteController::~ConcreteController() {
 */
 
 int main (int argc, char **argv) {
-    int c;
+    model_options mo;
+	int c;
     int digit_optind = 0;
-    conf stats;
 
-	stats.udp_mode = 0;
-	stats.server_mode = 0;
-	//stats.ip = "127.0.0.1";
-	stats.port =stats.port + '3409';
-	printf("%d\n",stats.port);
+	fill_default(mo);
+	//printf("%d\n",stats.port);
+	printf("%d\n",mo.port);
     while (1) {
          int this_option_optind = optind ? optind : 1;
 	 int option_index = 0;
 
-        c = getopt (argc, argv, "p::i::sulc:b:?");
+	static struct option long_options[] = {
+            {"port", 2, 0, 'p'},
+            {"ip", 2, 0, 'i'},
+            {"server", 0, 0, 's'},
+            {"udp", 0, 0, 'u'},		
+            {"loss", 0, 0, 'l'},
+            {"count", 1, 0, 'c'},
+	    {"size", 1, 0, 'b'},
+            {0, 0, 0, 0}
+        };	
+
+        c = getopt_long (argc, argv, "p::i::sulc:b:?",long_options, &option_index);
+printf("%d\n",mo.port);
+
         if (c == -1)
             break;
 
         switch (c) {
+	case 0:
+		printf("параметр %s", long_options[option_index].name);
+		if(optarg)
+		printf("с аргументом %s", optarg);
+		printf("\n");
+		break;
         case 'p':
-            printf ("Port was : `%d'\n", stats.port);
-	stats.port = optarg;
-	printf ("Port now :%s\n",optarg);
+            printf ("Port was : `%d'\n", mo.port);
+	mo.port = atoi(optarg);
+	printf ("Port now :%d\n",mo.port);
             break;
 
         case 'i':
@@ -64,12 +86,12 @@ int main (int argc, char **argv) {
 
         case 's':
             printf ("Server mode: on! \n");
-		stats.server_mode = 1;            
+		mo.server_mode = 1;            
 		break;
 
         case 'u':
             printf ("UDP mode: on! \n");
-            stats.udp_mode = 1;
+            mo.model_type = 1;
 		break;
 
 	case 'l':
@@ -77,13 +99,13 @@ int main (int argc, char **argv) {
 	break;
 
 	 case 'b':
+		mo.size = atoi(optarg);
             printf ("Pocket size:  `%s'\n", optarg);
-            stats.size = optarg;
 		break;
         
         case 'c':
             printf ("The number of pockets is:  `%s'\n", optarg);
-            stats.count = optarg;
+            mo.count = atoi(optarg);
 		break;
 
 	case '?':
