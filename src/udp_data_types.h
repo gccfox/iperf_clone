@@ -1,4 +1,5 @@
 #pragma once
+//#define UDP_PACKET_SEND_DELAY_MS		1
 //---Contains main connection info
 struct connection_init_data {
 	int 	packet_count;
@@ -14,4 +15,5 @@ struct connection_terminate_data {
 //---Udp apcket struct
 struct udp_data_packet {
 	char	flood_data[UDP_FLOOD_DATA_SIZE];
+    int     number;
 };

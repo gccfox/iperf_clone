@@ -28,7 +28,11 @@ void UdpClientModel::run() {
 	initDataSocket();
 	sendDataStream();
 
+    //---Send term pack
 	safeSendTerminationPacket();
+
+    //---Close all handles
+    freeResources();
 }
 
 
@@ -143,7 +147,7 @@ struct connection_init_data* UdpClientModel::formInitPacket() {
 void UdpClientModel::sendDataStream() {
 	printf("UDP_client: start data stream\n");
 	for (int i = 0; i < packet_count; i++) {
-		sendDataPacket();
+		sendDataPacket(i);
 		printf("UDP_client: packet [%d] sent..\n", i);
 	}
 	printf("UDP_client: end data stream\n");
@@ -153,8 +157,9 @@ void UdpClientModel::sendDataStream() {
 /*
 *	Send simple data packet
 */
-void UdpClientModel::sendDataPacket() {
+void UdpClientModel::sendDataPacket(int num) {
 	struct udp_data_packet	packet;
+    packet.number = num;
 
 	//---Send data
 	if (sendto(data_socket, (void *)&packet, sizeof(struct udp_data_packet), 0,
@@ -162,6 +167,7 @@ void UdpClientModel::sendDataPacket() {
 		printf("UDP_client: flood packet send error: error_code: %d\n", errno);
 		exit(1);
 	} 
+	//usleep(UDP_PACKET_SEND_DELAY_MS);
 }
 		
 
@@ -261,4 +267,14 @@ void UdpClientModel::safeSendTerminationPacket() {
 		exit(2);
 	}	
 	printf("UDP_client: sent term packet!\n");
+}
+
+
+/**
+  *     Free all sockets
+  *
+  */
+void UdpClientModel::freeResources() {
+    close(data_socket);
+    close(system_data_socket);
 }

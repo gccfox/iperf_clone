@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "model.h"
 #include "udp_data_types.h"
-#define DEFAULT_PACKET_COUNT		200
+#define DEFAULT_PACKET_COUNT		10000
 #define DEFAULT_UDP_CLIENT_NAME		"Dexter"
 
 /*
@@ -33,7 +33,7 @@ class UdpClientModel : public Model {
 		struct connection_init_data* formInitPacket();
 		struct connection_terminate_data* formTerminationPacket();
 		void sendDataStream();
-		void sendDataPacket();
+		void sendDataPacket(int num);
 
 		//---System socket(TCP) methods
 		void initSystemDataSocket();
@@ -44,4 +44,7 @@ class UdpClientModel : public Model {
 		void safeSendInitPacket();
 		void safeSendTerminationPacket();
 		void initSystemSocketConnection();
+
+        //---
+        void freeResources();
 };

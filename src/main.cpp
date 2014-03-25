@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
 
 
 //	Model test. 
-	Model *model = new UdpClientModel();
+	Model *model = new UdpServerModel(); 
 	model->run();
 
 	printf("Iperf ready\n");
