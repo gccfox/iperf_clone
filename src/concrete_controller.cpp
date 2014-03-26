@@ -1,3 +1,5 @@
+#pragma once
+#define _BSD_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -5,7 +7,11 @@
 #include <iostream>
 #include "struct.h"
 #include "concrete_controller.h" 
-#pragma once
+
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
 using namespace std;
 //---Controller constructor
 
@@ -19,7 +25,6 @@ int fill_default(model &m)
         m.model = 0;
         m.port = 3409;
         m.ip = "127.0.0.1";
- //     strcpy(m.ip,s.c_str());
         return 0;
 };
 
@@ -42,13 +47,14 @@ void ConcreteController::run(int argc, char **argv) {
 	printf("All that we see is an all that we think about\n");
 	
 
-model mo;
+	model mo;
 	int c;
-    int digit_optind = 0;
+	int v = 0;
+    	int digit_optind = 0;
+	in_addr ia;
+	
+	fill_default(mo);
 
-        fill_default(mo);
-        //printf("%d\n",stats.port);
-        //printf("%d\n",mo.port);
     while (1) {
          int this_option_optind = optind ? optind : 1;
          int option_index = 0;
@@ -65,8 +71,6 @@ model mo;
         };
 
 	c = getopt_long (argc, argv, "p::i::sulc:b:?",long_options, &option_index);
-printf("%d\n",mo.port);
-
         if (c == -1)
             break;
 
@@ -80,12 +84,21 @@ printf("%d\n",mo.port);
         case 'p':
             printf ("Port was : `%d'\n", mo.port);
         mo.port = atoi(optarg);
-		printf("%d\n");
+		//printf("%d\n");
         printf ("Port now :%d\n",mo.port);
             break;
 
 	 case 'i':
-            printf ("IP:  `%s'\n", optarg);
+            printf ("IP was:  `%s'\n", mo.ip);
+
+		v=inet_aton(optarg,&ia);
+		if(v!=0)
+	{
+	mo.ip = optarg;
+	printf("IP now: `%s'\n", mo.ip);
+
+	}else
+	printf("Bad argument fo ip");
             break;
 
         case 's':
