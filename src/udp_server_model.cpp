@@ -1,9 +1,9 @@
+#include "udp_server_model.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
-#include <ctime>
-#include "udp_server_model.h"
+#include <time.h>
 
 
 /**
@@ -25,7 +25,7 @@ UdpServerModel::UdpServerModel() {
     packets_expected = 0;
     packets_received = 0;
     receive_time = 0;
-    start_receive_time = end_receive_time = 0;
+    //start_receive_time = end_receive_time = 0;
 	end_udp_data_flag = 0;
 }
 
@@ -55,6 +55,7 @@ void UdpServerModel::run() {
 		
     //pthread_cancel(flood_data_thread);
     pthread_join(flood_data_thread, (void **)udp_thread_result);
+	getCurrentTime(&end_receive_data_time);
 
     printStatistic();
     freeResources();
@@ -203,7 +204,8 @@ void UdpServerModel::startDataReceivingThread() {
     int thread_err_code = 0;
 
 	//---Snap start time
-    start_receive_time = clock();
+    //start_receive_time = clock();
+	getCurrentTime(&start_receive_data_time);
 	
 	//---Create data thread
     if (thread_err_code = pthread_create(&flood_data_thread, NULL, startDataReceiving, static_cast<void *>(this))) {
@@ -344,7 +346,7 @@ void UdpServerModel::safeReceiveTerminationPacket() {
 	}
 	
 	printf("Udp_server: get termination packet with code %d\n", terminate_packet.termination_code);
-    end_receive_time = clock();
+    //end_receive_time = clock();
 }
 
 
@@ -354,11 +356,16 @@ void UdpServerModel::safeReceiveTerminationPacket() {
   */
 void UdpServerModel::printStatistic() {
 	double loss_percentage = 1 - packets_received / (double)packets_expected;
-    receive_time = end_receive_time - start_receive_time;
-    printf("start time: %d, end time %d\n", start_receive_time, end_receive_time);
-    printf("time: %f\n", (double)receive_time / CLOCKS_PER_SEC);
+    //receive_time = end_receive_time - start_receive_time;
+	receive_time = getUdpDataProcessingTime();
+	average_speed = packets_received * sizeof(udp_data_packet) / receive_time;
+    //printf("start time: %d, end time %d\n", start_receive_time, end_receive_time);
+    //printf("time: %f\n", (double)receive_time / CLOCKS_PER_SEC);
+	printf("data processing time: %.3f\n", receive_time);
     printf("expected: %d, receive: %d\n", packets_expected, packets_received);
 	printf("percentage of loss packets: %.3f\n", loss_percentage);
+	//printf("average speed is %.4fKb\n", average_speed / 1024.0);
+	printHumanReadableAverageSpeed();
 }
     
 
@@ -401,3 +408,46 @@ void UdpServerModel::configureTimer() {
         exit(2);
     }
 } 
+
+
+
+/**
+  * 	Fills structure with current process on CPU uptime
+  */
+int UdpServerModel::getCurrentTime(struct timespec *time_struct) {
+	if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, time_struct)) {
+		perror("UDP_server: error getting thread time!");
+		return false;
+	}
+	return true;
+}
+
+
+
+/**
+  * 	Getting time of data processing
+  */
+double UdpServerModel::getUdpDataProcessingTime() {
+	unsigned long start_ms = start_receive_data_time.tv_sec * 1000 + start_receive_data_time.tv_nsec / 1000000;
+	unsigned long end_ms = end_receive_data_time.tv_sec * 1000 + end_receive_data_time.tv_nsec / 1000000;
+	/*printf("start time: %d %d\n", start_receive_data_time.tv_sec, start_receive_data_time.tv_nsec);
+	printf("end time: %d %d\n", end_receive_data_time.tv_sec, end_receive_data_time.tv_nsec);*/
+	return (end_ms - start_ms) / 1000.0;
+}
+
+
+/**
+  *
+  */
+void UdpServerModel::printHumanReadableAverageSpeed() {
+	double kb_speed;
+	double mb_speed;
+	kb_speed = average_speed / 1024.0;
+    mb_speed = kb_speed / 1024.0;
+
+	if (kb_speed < 1024) {
+		printf("UDP_server: average speed :%.3fKb\n", kb_speed);
+	} else {
+		printf("UDP_server: average speed :%.3fMb\n", mb_speed);
+	}
+}

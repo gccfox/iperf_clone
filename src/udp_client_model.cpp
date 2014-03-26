@@ -2,19 +2,19 @@
 #include <arpa/inet.h>
 #include <stdio.h>
 
-/*
-*	Just a constructor 
-*/
+/**
+  *		Just a constructor 
+  */
 UdpClientModel::UdpClientModel() {
 	printf("Udp client created!\n");
 	packet_count = DEFAULT_PACKET_COUNT;
 }
 
 
-/*
-*	Main function of Udp client
-*	Place your code here
-*/
+/**
+  *		Main function of Udp client
+  *		Place your code here
+  */
 void UdpClientModel::run() {
 
 	//---TCP
@@ -36,10 +36,10 @@ void UdpClientModel::run() {
 }
 
 
-/*
-*	This function provides pre configuration
-*	Do not touch now
-*/
+/**
+  *		This function provides pre configuration
+  *		Do not touch now
+  */
 void UdpClientModel::configure(struct configure_struct *configuration_struct) {
 	if (configuration_struct == NULL) {
 		printf("UDP_Client: model config error!\n");
@@ -49,20 +49,20 @@ void UdpClientModel::configure(struct configure_struct *configuration_struct) {
 }
 
 
-/*
-*	Create and configure socket with parameters from
-*	struct configure_struct
-*/ 
+/**
+  *		Create and configure socket with parameters from
+  *		struct configure_struct
+  */ 
 void UdpClientModel::initDataSocket() {
 	data_socket = createDataSocket();
 	configureDataSocket();
 }
 
 
-/*
-* 	Creates internet socket
-*
-*/
+/**
+  * 	Creates internet socket
+  *
+  */
 int UdpClientModel::createDataSocket() {
 	int socket_fd;	
 
@@ -74,10 +74,10 @@ int UdpClientModel::createDataSocket() {
 }
 
 
-/*
-*	Fills the config structure
-*
-*/
+/**
+  *		Fills the config structure
+  *
+  */
 void UdpClientModel::configureDataSocket() {
 	memset(&data_socket_config, 0, sizeof(data_socket_config));
 	data_socket_config.sin_family = AF_INET;
@@ -90,10 +90,10 @@ void UdpClientModel::configureDataSocket() {
 }
 
 
-/*
-*	Start packet processing !deprecated
-*
-*/
+/**
+  *		Start packet processing !deprecated
+  *	
+  */
 void UdpClientModel::startDataClient() {
 	char 	message_buffer[UDP_PACKET_SIZE];
 	memset(&message_buffer, 0, UDP_PACKET_SIZE);
@@ -110,9 +110,9 @@ void UdpClientModel::startDataClient() {
 
 
 
-/*
-*	Send init data to server
-*/
+/**
+  * 	Send init data to server
+  */
 void UdpClientModel::sendInitPacket() {
 	struct connection_init_data *init_packet = formInitPacket();
 	printf("UDP_client: sending init packet!\n");
@@ -127,10 +127,10 @@ void UdpClientModel::sendInitPacket() {
 }
 
 
-/*
-*	From init packet and
-*	return pointer to them
-*/
+/**
+  *		From init packet and
+  *		return pointer to them
+  */
 struct connection_init_data* UdpClientModel::formInitPacket() {
 	struct connection_init_data *result = new connection_init_data;
 	result->packet_count = packet_count;
@@ -140,10 +140,10 @@ struct connection_init_data* UdpClientModel::formInitPacket() {
 }
 
 
-/*
-*	Starts to flood net by packets
-*
-*/
+/**
+  *		Starts to flood net by packets
+  *
+  */
 void UdpClientModel::sendDataStream() {
 	printf("UDP_client: start data stream\n");
 	for (int i = 0; i < packet_count; i++) {
@@ -154,9 +154,9 @@ void UdpClientModel::sendDataStream() {
 }
 
 
-/*
-*	Send simple data packet
-*/
+/**
+  *		Send simple data packet
+  */
 void UdpClientModel::sendDataPacket(int num) {
 	struct udp_data_packet	packet;
     packet.number = num;
@@ -171,9 +171,9 @@ void UdpClientModel::sendDataPacket(int num) {
 }
 		
 
-/*
-*	Send init packet with TCP protocol
-*/
+/**
+  *		Send init packet with TCP protocol
+  */
 void UdpClientModel::safeSendInitPacket() {
 	struct connection_init_data *init_data_packet = formInitPacket();
 	if (send(system_data_socket, (void *)init_data_packet, sizeof(struct connection_init_data), 0) < 0) {
@@ -182,9 +182,9 @@ void UdpClientModel::safeSendInitPacket() {
 	}	
 }
 
-/*
-*	Connects to TCP system server
-*/
+/**
+  *		Connects to TCP system server
+  */
 void UdpClientModel::initSystemSocketConnection() {
 	if (connect(system_data_socket, (struct sockaddr *)&system_data_socket_config, 
 		sizeof(struct sockaddr_in)) < 0) {
@@ -195,20 +195,20 @@ void UdpClientModel::initSystemSocketConnection() {
 
 
 
-/*
-*	Create and configure system (TCP)socket with parameters from
-*	struct configure_struct
-*/ 
+/**
+  *		Create and configure system (TCP)socket with parameters from
+  *		struct configure_struct
+  */ 
 void UdpClientModel::initSystemDataSocket() {
 	system_data_socket = createSystemDataSocket();
 	configureSystemDataSocket();
 }
 
 
-/*
-* 	Creates internet system socket(TCP)
-*
-*/
+/**
+  * 	Creates internet system socket(TCP)
+  *
+  */
 int UdpClientModel::createSystemDataSocket() {
 	int socket_fd;	
 
@@ -220,10 +220,10 @@ int UdpClientModel::createSystemDataSocket() {
 }
 
 
-/*
-*	Fills the ystem socket (TCP) config structure
-*
-*/
+/**
+  *		Fills the ystem socket (TCP) config structure
+  *
+  */
 void UdpClientModel::configureSystemDataSocket() {
 	memset(&data_socket_config, 0, sizeof(data_socket_config));
 	system_data_socket_config.sin_family = AF_INET;
@@ -236,10 +236,10 @@ void UdpClientModel::configureSystemDataSocket() {
 }
 
 
-/*
-*	Start system packet processing
-*
-*/
+/**
+  *		Start system packet processing
+  *
+  */
 void UdpClientModel::startSystemDataClient() {
 		printf("UDP_client: system daemon ready\n");
 		initSystemDataSocket();
@@ -248,18 +248,18 @@ void UdpClientModel::startSystemDataClient() {
 	}
 
 
-/*
-*	Form terminate packet
-*/
+/**
+  *		Form terminate packet
+  */
 struct connection_terminate_data* UdpClientModel::formTerminationPacket() {
 	struct connection_terminate_data *result = new connection_terminate_data;
 	result->termination_code = 707;
 	return result;
 }
 
-/*
-*	Send termination packet
-*/
+/**
+  *	Send termination packet
+  */
 void UdpClientModel::safeSendTerminationPacket() {
 	struct connection_terminate_data *term_packet = formTerminationPacket();
 	if (send(system_data_socket, (void *)term_packet, sizeof(struct connection_terminate_data), 0) < 0) {

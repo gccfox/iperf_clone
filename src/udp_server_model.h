@@ -16,9 +16,11 @@ class UdpServerModel : public Model {
 	int 						flood_data_socket;
 	int							control_data_socket;
 	int 						packet_count, packets_expected, packets_received;
-    int                         receive_time;
+    double                      receive_time;
 	int							receive_socket;
-    clock_t                     start_receive_time, end_receive_time;
+    //clock_t                     start_receive_time, end_receive_time;
+	double						average_speed;
+	struct timespec				start_receive_data_time, end_receive_data_time;
 	struct sockaddr_in			flood_data_socket_config;
 	struct sockaddr_in			control_data_socket_config;
 	struct configure_struct 	*server_model_config;
@@ -66,4 +68,7 @@ class UdpServerModel : public Model {
         void printStatistic(); 
         void freeResources();
         void configureTimer();
+		int getCurrentTime(struct timespec *time_struct);
+		double getUdpDataProcessingTime(); //---in seconds
+		void printHumanReadableAverageSpeed();
 };

@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include "model.h"
 #include "udp_data_types.h"
-#define DEFAULT_PACKET_COUNT		10000
-#define DEFAULT_UDP_CLIENT_NAME		"Dexter"
 
 /*
 *	This model characterize Udp client
