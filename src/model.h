@@ -1,3 +1,4 @@
+#pragma once
 #include "info_types.h"
 #define MODEL_H		1
 
