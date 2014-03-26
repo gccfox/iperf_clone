@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include "controller.h"
 
+
+
 /*---We have one controller. 
 	Main function of controller - parse options, 
 	configure and run models

@@ -7,14 +7,14 @@
 #include "struct.h"
 #pragma once
 using namespace std;
-int fill_default(model_options &m);
-int fill_default(model_options &m)
+int fill_default(model &m);
+int fill_default(model &m)
 {
 	m.server_mode = 0;
 	m.loss = 0;
 	m.count = 0;
 	m.size = 0;
-	m.model_type = 0;
+	m.model = 0;
 	m.port = 3409;
 	m.ip = "127.0.0.1";
  //	strcpy(m.ip,s.c_str());
@@ -39,7 +39,7 @@ ConcreteController::~ConcreteController() {
 */
 
 int main (int argc, char **argv) {
-    model_options mo;
+    model mo;
 	int c;
     int digit_optind = 0;
 
@@ -91,7 +91,7 @@ printf("%d\n",mo.port);
 
         case 'u':
             printf ("UDP mode: on! \n");
-            mo.model_type = 1;
+            mo.model = 1;
 		break;
 
 	case 'l':
