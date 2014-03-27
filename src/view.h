@@ -1,3 +1,4 @@
+#pragma once
 #define VIEW_H		1
 /*
 *	Abstract interface for view class

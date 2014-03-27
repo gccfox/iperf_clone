@@ -15,8 +15,8 @@ class UdpServerModel : public Model {
 
 	int 						flood_data_socket;
 	int							control_data_socket;
-	int 						packet_count, packets_expected, packets_received;
-    double                      receive_time;
+	long 						packet_count, packets_expected, packets_received;
+    double		                receive_time_sec;
 	int							receive_socket;
     //clock_t                     start_receive_time, end_receive_time;
 	double						average_speed;
@@ -69,6 +69,6 @@ class UdpServerModel : public Model {
         void freeResources();
         void configureTimer();
 		int getCurrentTime(struct timespec *time_struct);
-		double getUdpDataProcessingTime(); //---in seconds
+		long getUdpDataProcessingTime(); //---in ms
 		void printHumanReadableAverageSpeed();
 };

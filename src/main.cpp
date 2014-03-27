@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
 */
 
 
-//	Model test. 
+//	Molient/Server
 	Model *model = new UdpServerModel(); 
 	model->run();
 
