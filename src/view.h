@@ -6,5 +6,8 @@
 */
 class View {
 	public:
-		virtual void print(void *) {};
+		void printError(void *);
+		void printInfo(void *);
+		void printWarning(void *);
+		void printStatisticData(void *);
 };
