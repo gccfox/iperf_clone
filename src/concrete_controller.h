@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "controller.h"
-
+#include "struct.h"
 
 
 /*---We have one controller. 
@@ -15,5 +15,10 @@ class ConcreteController : public Controller {
 		ConcreteController();
 		~ConcreteController();
 		void run(int argc, char **argv);
-		Model *get_model();
+		Model *MakeDecision(struct model_creating_struct *mod);
+		int checkTcpServer(struct model_creating_struct *mod);
+		int checkTcpClient(struct model_creating_struct *mod);
+		int checkUdpServer(struct model_creating_struct *mod);
+		int checkUdpClient(struct model_creating_struct *mod);		
+		Model *get_model(struct model_creating_struct *mod);
 };

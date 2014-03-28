@@ -1,5 +1,4 @@
-#pragma once
-#define _BSD_SOURCE
+//#define _BSD_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -7,16 +6,113 @@
 #include <iostream>
 #include "struct.h"
 #include "concrete_controller.h" 
-
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include "tcp_client_model.h"
+#include "udp_client_model.h"
+#include "tcp_server_model.h"
+#include "udp_server_model.h"
+
+
 
 using namespace std;
 //---Controller constructor
 
-int fill_default(model &m);
-int fill_default(model &m)
+
+
+int ConcreteController::checkUdpServer(struct model_creating_struct *m)
+{
+	printf("Checking for Udp Server Model!\n");
+        if(m->server_mode == 1)
+                if(m->model == 1)
+                {
+                        //UdpServerModel *udp_server = new UdpServerModel();
+			printf("Udp server model accepted and created!\n");
+			
+                       	
+			return 1;
+                }
+                else
+                {	
+			return 0;
+                }
+        else
+        {
+                printf("Checking Udp server Model failed!\n");
+                return 0;
+        }
+
+}
+
+int ConcreteController::checkUdpClient(struct model_creating_struct *m)
+{
+	printf("Checking for Udp Client Model!\n");
+        if(m->server_mode == 0)
+                if(m->model == 1)
+                {
+                        //UdpClientModel *udp_client = new UdpClientModel();
+			printf("Udp client model accepted and created!\n");
+                        return 1;
+                }
+                else
+                {
+			return 0;
+                }
+        else
+        {
+                printf("Checking Udp Client Model failed!\n");
+                return 0;
+        }
+
+
+}
+
+int ConcreteController::checkTcpClient(struct model_creating_struct *m)
+{
+	printf("Checking for Tcp Client Model!\n");
+        if(m->server_mode == 0)
+                if(m->model == 0)
+                {
+                        //TcpClientModel *tcp_client = new TcpClientModel();
+			printf("Tcp Client model accepted and created!\n");
+                        return 1;
+                }
+                else
+                {
+			return 0;
+                }
+        else
+        {
+                printf("Checking Tcp Client Model failed!\n");
+                return 0;
+        }
+
+}
+	
+int ConcreteController::checkTcpServer(struct model_creating_struct *m)
+{
+	printf("Checking for Tcp Server Model!\n");
+	if(m->server_mode == 1)
+		if(m->model == 0)
+		{
+			//TcpServerModel *tcp_server = new TcpServerModel();
+			printf("Tcp Server model accepted and created!\n");
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	else
+	{
+		printf("Checking Tcp Server Model failed!\n");
+		return 0;
+	}
+}
+
+int fill_default(model_creating_struct &m);
+int fill_default(model_creating_struct &m)
 {
         m.server_mode = 0;
         m.loss = 0;
@@ -28,6 +124,37 @@ int fill_default(model &m)
         return 0;
 };
 
+Model* ConcreteController::MakeDecision(struct model_creating_struct *mod){
+	
+printf("Thinking about model\n");
+
+if(!ConcreteController::checkTcpServer(mod)==1)
+{
+	if(!ConcreteController::checkUdpServer(mod)==1)
+		{	if(!ConcreteController::checkTcpClient(mod)==1)
+			{
+				ConcreteController::checkUdpClient(mod);
+				UdpClientModel *udp_client = new UdpClientModel();
+				return *udp_client;
+			}else{
+				TcpClientModel *tcp_client = new TcpClientModel();
+			     	return *tcp_client;
+				}
+		}else{
+			UdpServerModel *udp_server = new UdpServerModel();
+		     	return *udp_server;
+			}
+}else{
+	TcpServerModel *tcp_server = new TcpServerModel();
+	return *tcp_server;
+	}
+
+exit(0);
+}
+
+
+
+//Constructor
 ConcreteController::ConcreteController() {
 	printf("Controller ready\n");
 }
@@ -47,7 +174,7 @@ void ConcreteController::run(int argc, char **argv) {
 	printf("All that we see is an all that we think about\n");
 	
 
-	model mo;
+	model_creating_struct mo;
 	int c;
 	int v = 0;
     	int digit_optind = 0;
@@ -109,8 +236,7 @@ void ConcreteController::run(int argc, char **argv) {
         case 'u':
             printf ("UDP mode: on! \n");
             mo.model = 1;
-                break;
-
+		break;
         case 'l':
             printf ("Pocket casualties are going to be counted\n");
         break;
@@ -122,31 +248,28 @@ void ConcreteController::run(int argc, char **argv) {
 
         case 'c':
             printf ("The number of pockets is:  `%s'\n", optarg);
-            mo.count = atoi(optarg);
-                break;
+		 mo.count = atoi(optarg);
+		break;
 
-        case '?':
-        printf("Unknown key. Please, be sure, you know what you do\n");
+	case '?':
+	printf("Unknown key. Please, be sure, you know what you do\n");
             break;
 
         default:
-        break;
-
+	break;
+           
         }
     }
 
-if (optind < argc) {
+    if (optind < argc) {
         printf ("элементы ARGV, не параметры: ");
         while (optind < argc)
             printf ("%s ", argv[optind++]);
         printf ("\n");
     }
-
+printf("%d\n", mo.model);
+MakeDecision(&mo);
     exit (0);
 }
 
-//---Return type of model, that we will use
-Model *ConcreteController::get_model() {
-	printf("Controller: i send model\n");
-	return NULL;
-}
+

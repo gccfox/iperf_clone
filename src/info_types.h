@@ -3,5 +3,6 @@
 struct model_options {
 	int model_type;//udp=1, tcp=0
 	int port;
+	int server_mode;
 };
 
