@@ -27,8 +27,7 @@ int ConcreteController::checkUdpServer(struct model_creating_struct *m)
         if(m->server_mode == 1)
                 if(m->model == 1)
                 {
-                        //UdpServerModel *udp_server = new UdpServerModel();
-			printf("Udp server model accepted and created!\n");
+                        printf("Udp server model accepted and created!\n");
 			
                        	
 			return 1;
@@ -51,8 +50,7 @@ int ConcreteController::checkUdpClient(struct model_creating_struct *m)
         if(m->server_mode == 0)
                 if(m->model == 1)
                 {
-                        //UdpClientModel *udp_client = new UdpClientModel();
-			printf("Udp client model accepted and created!\n");
+                        printf("Udp client model accepted and created!\n");
                         return 1;
                 }
                 else
@@ -74,8 +72,7 @@ int ConcreteController::checkTcpClient(struct model_creating_struct *m)
         if(m->server_mode == 0)
                 if(m->model == 0)
                 {
-                        //TcpClientModel *tcp_client = new TcpClientModel();
-			printf("Tcp Client model accepted and created!\n");
+                        printf("Tcp Client model accepted and created!\n");
                         return 1;
                 }
                 else
@@ -96,7 +93,6 @@ int ConcreteController::checkTcpServer(struct model_creating_struct *m)
 	if(m->server_mode == 1)
 		if(m->model == 0)
 		{
-			//TcpServerModel *tcp_server = new TcpServerModel();
 			printf("Tcp Server model accepted and created!\n");
 			return 1;
 		}
@@ -134,19 +130,19 @@ if(!ConcreteController::checkTcpServer(mod)==1)
 		{	if(!ConcreteController::checkTcpClient(mod)==1)
 			{
 				ConcreteController::checkUdpClient(mod);
-				UdpClientModel *udp_client = new UdpClientModel();
-				return *udp_client;
+				Model *udp_client = new UdpClientModel();
+				return udp_client;
 			}else{
-				TcpClientModel *tcp_client = new TcpClientModel();
-			     	return *tcp_client;
+				Model *tcp_client = new TcpClientModel();
+			     	return tcp_client;
 				}
 		}else{
-			UdpServerModel *udp_server = new UdpServerModel();
-		     	return *udp_server;
+			Model *udp_server = new UdpServerModel();
+		     	return udp_server;
 			}
 }else{
-	TcpServerModel *tcp_server = new TcpServerModel();
-	return *tcp_server;
+	Model *tcp_server = new TcpServerModel();
+	return tcp_server;
 	}
 
 exit(0);
@@ -209,37 +205,36 @@ void ConcreteController::run(int argc, char **argv) {
                 printf("\n");
                 break;
         case 'p':
-            printf ("Port was : `%d'\n", mo.port);
-        mo.port = atoi(optarg);
+            	printf ("Port was : `%d'\n", mo.port);
+        	mo.port = atoi(optarg);
 		//printf("%d\n");
-        printf ("Port now :%d\n",mo.port);
-            break;
+        	printf ("Port now :%d\n",mo.port);
+            	break;
 
 	 case 'i':
-            printf ("IP was:  `%s'\n", mo.ip);
-
+            	printf ("IP was:  `%s'\n", mo.ip);
 		v=inet_aton(optarg,&ia);
 		if(v!=0)
 	{
-	mo.ip = optarg;
-	printf("IP now: `%s'\n", mo.ip);
+		mo.ip = optarg;
+		printf("IP now: `%s'\n", mo.ip);
 
 	}else
 	printf("Bad argument fo ip");
-            break;
+            	break;
 
         case 's':
-            printf ("Server mode: on! \n");
+            	printf ("Server mode: on! \n");
                 mo.server_mode = 1;
                 break;
 
         case 'u':
-            printf ("UDP mode: on! \n");
-            mo.model = 1;
+            	printf ("UDP mode: on! \n");
+            	mo.model = 1;
 		break;
         case 'l':
-            printf ("Pocket casualties are going to be counted\n");
-        break;
+            	printf ("Pocket casualties are going to be counted\n");
+       		break;
 
 	case 'b':
                 mo.size = atoi(optarg);
@@ -247,16 +242,16 @@ void ConcreteController::run(int argc, char **argv) {
                 break;
 
         case 'c':
-            printf ("The number of pockets is:  `%s'\n", optarg);
-		 mo.count = atoi(optarg);
+            	printf ("The number of pockets is:  `%s'\n", optarg);
+		mo.count = atoi(optarg);
 		break;
 
 	case '?':
-	printf("Unknown key. Please, be sure, you know what you do\n");
-            break;
+		printf("Unknown key. Please, be sure, you know what you do\n");
+            	break;
 
         default:
-	break;
+		break;
            
         }
     }
@@ -264,7 +259,7 @@ void ConcreteController::run(int argc, char **argv) {
     if (optind < argc) {
         printf ("элементы ARGV, не параметры: ");
         while (optind < argc)
-            printf ("%s ", argv[optind++]);
+        printf ("%s ", argv[optind++]);
         printf ("\n");
     }
 printf("%d\n", mo.model);
