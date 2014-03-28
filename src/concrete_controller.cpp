@@ -1,4 +1,5 @@
 //#define _BSD_SOURCE
+#pragma once
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -13,7 +14,6 @@
 #include "udp_client_model.h"
 #include "tcp_server_model.h"
 #include "udp_server_model.h"
-
 
 
 using namespace std;
