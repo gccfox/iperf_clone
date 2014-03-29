@@ -3,7 +3,7 @@
   *		How to print error message from UDP model
   */
 void UdpView::printError(void *error_struct) {
-	struct udp_error_struct		perror_struct = (struct udp_error_struct *)error_struct;
+	struct udp_error_data*		perror_struct = (struct udp_error_struct)error_struct;
 	printf("ERROR: %s: %s\n", perror_struct->model_name, perror_struct->error_msg); 
 	perror(perror_struct->error_msg);
 }

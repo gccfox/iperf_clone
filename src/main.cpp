@@ -5,7 +5,8 @@
 #include "udp_client_model.h"
 #include "tcp_server_model.h"
 #include "udp_server_model.h"
-#include "error_view.h"
+//#include "error_view.h"
+#include "tcp_view.h"
 
 
 int main(int argc, char **argv) {
@@ -14,12 +15,17 @@ int main(int argc, char **argv) {
 *	Controller *controller = new ConcreteController();
 *	controller->run(argc, argv);
 */
+	
 
-/*
-//	View test
-*	View *err_view = new ErrorView();
-*	err_view->print((void *)"wrong argument");
-*/
+	View test;
+	View *tcpView = new TcpDataView();
+//	tcp_statistic_data();
+	struct tcp_statistic_data *tcp_data = new (struct tcp_statistic_data);
+	tcpView -> printStatisticData(tcp_data); 
+
+
+//	err_view->print((void *)"wrong argument");
+
 
 /*
 //	Model test. 
