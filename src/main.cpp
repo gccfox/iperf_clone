@@ -7,6 +7,8 @@
 #include "concrete_controller.h"
 #include "error_view.h"
 #include "tcp_view.h"
+#include "view_controller.h"
+#include "udp_view.h"
 using namespace std;
 
 int main (int argc, char **argv) {
@@ -14,9 +16,12 @@ int main (int argc, char **argv) {
 //Controller test
 	Model *model;
 	ConcreteController *controller = new ConcreteController();
+	//ViewController* view_controller = new ViewController();
+
 	controller->run(argc, argv);
 	model = controller->getModel();
 	model->run();
+
 
 
 	/*View test;

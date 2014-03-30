@@ -1,5 +1,4 @@
 #pragma once
-#define VIEW_H		1
 /*
 *	Abstract interface for view class
 *	You should define (void *) to (struct yuor_info_type *)
@@ -7,8 +6,9 @@
 */
 class View {
 	public:
-		void printError(void *);
-		void printInfo(void *);
-		void printWarning(void *);
-		void printStatisticData(void *);
+		View() {};
+		virtual void printError(void *) {};
+		virtual void printInfo(void *) {};
+		virtual void printWarning(void *) {};
+		virtual void printStatisticData(void *) {};
 };
