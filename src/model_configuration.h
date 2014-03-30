@@ -24,12 +24,8 @@
 
 //---Specify model configuration options, settin by controller
 struct model_configuration_struct{
-/*    int loss; //socket what was fuc*ed in process
-    int count; //count of pockets
-    int size; //size of each(?) pocket
-	int model;//udp=1, tcp=0
-	char* ip;*/
 	int port;
+	int system_port;
 	int work_mode;
 	int protocol;
 	char* ip;

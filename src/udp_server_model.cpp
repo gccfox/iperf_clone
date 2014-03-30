@@ -80,6 +80,8 @@ void UdpServerModel::configure(struct model_configuration_struct *configuration_
 		exit(1);
 	}
 	printf("UDP_server: configuration!\n"); 
+	port = configuration_struct->port; 
+	system_port = configuration_struct->system_port;
 }
 
 

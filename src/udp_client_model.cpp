@@ -50,7 +50,9 @@ void UdpClientModel::configure(struct model_configuration_struct *configuration_
 		exit(1);
 	}
 	printf("UDP_client: configuration!\n"); 
-
+	port = configuration_struct->port;
+	system_port = configuration_struct->system_port; 
+	host_ip_address = configuration_struct->ip;
 }
 
 

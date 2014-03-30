@@ -141,6 +141,7 @@ void ConcreteController::parsingArguments(int argc, char **argv, model_configura
 	int this_option_optind;
 
 	bool set_port_flag = false;
+	bool set_system_port_flag = false;
 	bool set_ip_flag = false;
 	bool set_packets_count_flag = false;
 	bool set_protocol_flag = false;
@@ -148,6 +149,7 @@ void ConcreteController::parsingArguments(int argc, char **argv, model_configura
 
     struct option long_options[] = {
             {"port", 1, NULL, 'p'},
+            {"system-port", 1, NULL, 'j'},
             {"ip", 1, NULL, 'i'},
             {"client", 0, NULL, 'c'},
             {"length", 1, NULL, 'l'},
@@ -160,7 +162,7 @@ void ConcreteController::parsingArguments(int argc, char **argv, model_configura
 
 
 	
-	while ((opt = getopt_long (argc, argv, "p:i:csutl:h",long_options, &option_index)) > 0) {
+	while ((opt = getopt_long (argc, argv, "p:j:i:csutl:h",long_options, &option_index)) > 0) {
 
 		this_option_optind = optind ? optind : 1; 
 
@@ -185,7 +187,22 @@ void ConcreteController::parsingArguments(int argc, char **argv, model_configura
 					exit(1);
 				} 
 				printf ("Port now :%d\n",mo->port);
+
+
+			case 'j':
+				checkFlagSet(set_system_port_flag);
+				printf ("System port was : `%d'\n", mo->port);
+				if ((mo->system_port = atoi(optarg)) < 0) {
+					printf("Error: sytem port expected int!\n");
+					exit(1);
+				} else if ((mo->system_port <= 1000) || (mo->system_port > 65536)) {
+					printf("Error: system port should be positive int more that 1000 and less that 65536\n");
+					exit(1);
+				} 
+				printf ("Sytem port now :%d\n",mo->system_port);
 				break;
+
+			break;
 
 
 			case 'i':
@@ -300,6 +317,7 @@ void ConcreteController::initModelStructure(struct model_configuration_struct *m
 	ma->work_mode = WORK_MODE_SERVER;
 	ma->protocol = PROTOCOL_UDP;
 	ma->port = DEFAULT_PORT;
+	ma->system_port = DEFAULT_SYSTEM_PORT;
 	ma->ip = new char[50];
 	strcpy(ma->ip, DEFAULT_IP);
 }
