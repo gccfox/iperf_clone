@@ -6,6 +6,7 @@
 #include "udp_server_model.h"
 #include "concrete_controller.h"
 #include "error_view.h"
+#include "tcp_view.h"
 using namespace std;
 
 int main (int argc, char **argv) {
@@ -18,12 +19,14 @@ int main (int argc, char **argv) {
 	model->run();
 
 
+	/*View test;
+	View *tcpView = new TcpDataView();
+	struct tcp_statistic_data *tcp_data = new (struct tcp_statistic_data);
+	tcpView -> printStatisticData(tcp_data); */
 
-/*
-//	View test
-*	View *err_view = new ErrorView();
-*	err_view->print((void *)"wrong argument");
-*/
+
+//	err_view->print((void *)"wrong argument");
+
 
 
 //	Molient/Server
