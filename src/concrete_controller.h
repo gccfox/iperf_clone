@@ -9,7 +9,7 @@
 #include <arpa/inet.h>
 
 #include "controller.h"
-#include "struct.h"
+#include "model_configuration.h"
 #include "tcp_client_model.h"
 #include "udp_client_model.h"
 #include "tcp_server_model.h"
