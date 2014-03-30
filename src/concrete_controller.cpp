@@ -8,136 +8,91 @@ using namespace std;
 
 
 //-----Trying to create Udp Server
-int ConcreteController::checkUdpServer(struct model_creating_struct *m)
+bool ConcreteController::checkUdpServer(struct model_creating_struct *mo)
 {
 	printf("Checking for Udp Server Model!\n");
-        if(m->server_mode == 1)
-                if(m->model == 1)
-                {
-                        printf("Udp server model accepted and created!\n");
+	if ((mo->work_mode == WORK_MODE_SERVER) && (mo->protocol == PROTOCOL_UDP) ) {
+		printf("UDP server accepted!\n");
+		return true;
+	}
 
-                       	
-			return 1;
-                }
-                else
-                {	
-			return 0;
-                }
-        else
-        {
-                printf("Checking Udp server Model failed!\n");
-                return 0;
-        }
-
+	printf("UDP server not accepted!\n"); 
+	return false;
 }
 
 
 
 //-----Trying to create Udp Client
-int ConcreteController::checkUdpClient(struct model_creating_struct *m)
+bool ConcreteController::checkUdpClient(struct model_creating_struct *mo)
 {
 	printf("Checking for Udp Client Model!\n");
-        if(m->server_mode == 0)
-                if(m->model == 1)
-                {
-                        printf("Udp client model accepted and created!\n");
-                        return 1;
-                }
-                else
-                {
-			return 0;
-                }
-        else
-        {
-                printf("Checking Udp Client Model failed!\n");
-                return 0;
-        }
+	if ((mo->work_mode == WORK_MODE_CLIENT) && (mo->protocol == PROTOCOL_UDP) ) {
+		printf("UDP client accepted!\n");
+		return true;
+	}
 
-
+	printf("UDP client not accepted!\n"); 
+	return false; 
 }
 
 
 
 //-----Trying to create Tcp Client
-int ConcreteController::checkTcpClient(struct model_creating_struct *m)
+bool ConcreteController::checkTcpClient(struct model_creating_struct *mo)
 {
 	printf("Checking for Tcp Client Model!\n");
-        if(m->server_mode == 0)
-                if(m->model == 0)
-                {
-                        printf("Tcp Client model accepted and created!\n");
-                        return 1;
-                }
-                else
-                {
-			return 0;
-                }
-        else
-        {
-                printf("Checking Tcp Client Model failed!\n");
-                return 0;
-        }
+	if ((mo->work_mode == WORK_MODE_CLIENT) && (mo->protocol == PROTOCOL_TCP) ) {
+		printf("TCP client accepted!\n");
+		return true;
+	}
 
+	printf("TCP client not accepted!\n");
+	return false;
 }
 
 
 
 //-----Trying to create Tcp Server	
-int ConcreteController::checkTcpServer(struct model_creating_struct *m)
+bool ConcreteController::checkTcpServer(struct model_creating_struct *mo)
 {
-	printf("Checking for Tcp Server Model!\n");
-	if(m->server_mode == 1)
-		if(m->model == 0)
-		{
-			printf("Tcp Server model accepted and created!\n");
-			return 1;
-		}
-		else
-		{
-			return 0;
-		}
-	else
-	{
-		printf("Checking Tcp Server Model failed!\n");
-		return 0;
+	if ((mo->work_mode == WORK_MODE_SERVER) && (mo->protocol == PROTOCOL_TCP) ) {
+		printf("TCP server accepted!\n");
+		return true;
 	}
+
+	printf("TCP server not accepted!\n"); 
+	return false; 
 }
 
 
-//-----Filling the strust by default
-int fill_default(model_creating_struct &m);
-int fill_default(model_creating_struct &m)
-{
-        m.server_mode = 0;
-        m.loss = 0;
-        m.count = 0;
-        m.size = 0;
-        m.model = 0;
-        m.port = 3409;
-		m.ip = new char[50];
-		strcpy(m.ip, "127.0.0.1");
-        return 0;
-};
 
 
 
 //----Creating Model
-Model* ConcreteController::makeDecision(struct model_creating_struct *mod){
+Model* ConcreteController::chooseModelType(struct model_creating_struct *mod){
 	Model* result = NULL;
 
 	printf("Thinking about model\n");
 
-	if (checkTcpServer(mod))
+	if (checkTcpServer(mod)) {
 		result = new TcpServerModel();
+		return result;
+	}
 
-	if (checkUdpServer(mod))
+	if (checkUdpServer(mod)) {
 		result = new UdpServerModel();
+		return result;
+	}
 
-	if (checkTcpClient(mod))
+	if (checkTcpClient(mod)){
 		result = new TcpClientModel();
+		return result;
+	}
 
-	if (checkUdpClient(mod))
+	if (checkUdpClient(mod)){
 		result = new UdpClientModel();
+		return result;
+	}
 
 	return result;
 }
@@ -156,88 +111,151 @@ ConcreteController::~ConcreteController() {
 	printf("Controller died\n");
 }
 
+void ConcreteController::printHelpPage() {
+	printf("Usage iperf_clone [-c|-s] options\n\n");
+	printf("Client\\Server specific:\n");
+	printf("  -p,  --port  #  	  Determine port. Should be integer in range 1001 and 65536\n");
+	printf("  -u,  --udp 		  Use UDP protocol\n");
+	printf("  -t,  --tcp 		  Use TCP protocol\n\n");
+
+	printf("Server specific:\n");
+	printf("  -s,  --server 	  Run as server\n\n"); 
+
+	printf("Client specific:\n");
+	printf("  -i,  --ip  <host>      Determine IP of server.\n");
+	printf("  -c,  --client  	  Run as client\n");
+	printf("  -l,  --packets-count  # Determine count of packets\n\n");
+
+	printf("Miscellaneous:\n");
+	printf("  -h,  --help Show this page\n\n");
+	printf("Report bugs undefined_now@sst.com\n");
+}
 
 //----Function to parse the string of arguments
 void ConcreteController::parsingArguments(int argc, char **argv, model_creating_struct *mo){
-int c;
-int v = 0;
-int digit_optind = 0;
-in_addr ia;
-while (1) {
-         int this_option_optind = optind ? optind : 1;
-         int option_index = 0;
+	int opt;
+	int v = 0;
+	int digit_optind = 0;
+	in_addr ia;
+	int option_index = 0;
+	int this_option_optind;
 
-        static struct option long_options[] = {
-            {"port", 2, 0, 'p'},
-            {"ip", 2, 0, 'i'},
-            {"server", 0, 0, 's'},
-            {"udp", 0, 0, 'u'},
-            {"loss", 0, 0, 'l'},
-            {"count", 1, 0, 'c'},
-            {"size", 1, 0, 'b'},
+    struct option long_options[] = {
+            {"port", 1, NULL, 'p'},
+            {"ip", 1, NULL, 'i'},
+            {"client", 0, NULL, 'c'},
+            {"length", 1, NULL, 'l'},
+            {"server", 0, NULL, 's'},
+            {"udp", 0, NULL, 'u'},
+			{"tcp", 0, NULL, 't'},
+			{"help", 0, NULL, 'h'},
             {0, 0, 0, 0}
         };
 
-	c = getopt_long (argc, argv, "p::i::sulc:b:?",long_options, &option_index);
-        if (c == -1)
-            break;
 
-        switch (c) {
-        case 0:
-                printf("параметр %s", long_options[option_index].name);
-                if(optarg)
-                printf("с аргументом %s", optarg);
-                printf("\n");
-        break;
-        case 'p':
-            	printf ("Port was : `%d'\n", mo->port);
-        		mo->port = atoi(optarg);
-        		printf ("Port now :%d\n",mo->port);
-        break;
+	
+	while ((opt = getopt_long (argc, argv, "p:i:csutl:h",long_options, &option_index)) > 0) {
 
-	 	case 'i':
-        	printf ("IP was:  `%s'\n", mo->ip);
-			v=inet_aton(optarg,&ia);
-			if(v!=0){
-				mo->ip = optarg;
-				printf("IP now: `%s'\n", mo->ip);
-			}else
-				printf("Bad argument fo ip");
-    	break;
+		this_option_optind = optind ? optind : 1; 
 
-        case 's':
-            	printf ("Server mode: on! \n");
-                mo->server_mode = 1;
-        break;
+        switch (opt) { 
 
-        case 'u':
-            	printf ("UDP mode: on! \n");
-            	mo->model = 1;
-		break;
+			case 0:
+				printf("параметр %s", long_options[option_index].name);
+				if(optarg) {
+					printf("с аргументом %s\n", optarg);
+				}
+				break;
 
-        case 'l':
-            	printf ("Pocket casualties are going to be counted\n");
-       	break;
 
-		case 'b':
-            	mo->size = atoi(optarg);
-            	printf ("Pocket size:  `%s'\n", optarg);
-        break;
+			case 'p':
+				printf ("Port was : `%d'\n", mo->port);
+				if ((mo->port = atoi(optarg)) < 0) {
+					printf("Error: poert expected int!\n");
+					exit(1);
+				} else if (mo->port <= 1000) {
+					printf("Error: port should be positive int more that 1000\n");
+					exit(1);
+				}
+				printf ("Port now :%d\n",mo->port);
+				break;
 
-        case 'c':
-            	printf ("The number of pockets is:  `%s'\n", optarg);
-				mo->count = atoi(optarg);
-		break;
 
-		case '?':
-				printf("Unknown key. Please, be sure, you know what you do\n");
-        break;
+			case 'i':
+				printf ("IP was:  `%s'\n", mo->ip);
+				if ((v = inet_aton(optarg,&ia))) {
+					mo->ip = optarg;
+					printf("IP now: `%s'\n", mo->ip);
+				} else {
+					printf("Error: IP should be valid!\n");
+					exit(0);
+				}
+				break;
 
-        default:
-		break;
-           
-        }
-    }
+
+			case 'c':
+				if (mo->work_mode != WORK_MODE_UNDEFINED) {
+					printHelpPage();
+					exit(0);
+				}
+				printf("Client mode on\n");
+				mo->work_mode = WORK_MODE_CLIENT;
+				break;
+
+
+			case 's':
+				if (mo->work_mode != WORK_MODE_UNDEFINED) {
+					printHelpPage();
+					exit(0);
+				}
+				printf ("Server mode: on! \n");
+				mo->work_mode = WORK_MODE_SERVER;
+				break;
+
+
+			case 'u':
+				if (mo->protocol != PROTOCOL_UNDEFINED) {
+					printHelpPage();
+					exit(0);
+				}
+				printf ("UDP mode: on! \n");
+				mo->protocol = PROTOCOL_UDP; 
+				break;
+
+			case 't':
+				if (mo->protocol != PROTOCOL_UNDEFINED) {
+					printHelpPage();
+					exit(0);
+				}
+				printf ("TCP mode: on! \n");
+				mo->protocol = PROTOCOL_TCP;
+				break;
+
+
+			case 'l':
+				int tmp;
+				if ((tmp = atoi(optarg)) < 0) {
+					printf("Error: number of packets should be int!\n");
+					exit(1);
+				} else if (tmp <= 0) {
+					printf("Error: number of packets should be positive, non-zero!\n");
+					exit(1);
+				}
+
+				mo->packets_count = tmp;
+				printf ("Length is set up to %d packets\n", mo->packets_count);
+				break;
+
+			case 'h':
+				printHelpPage();
+				exit(0);
+				break;
+
+			default:
+				printf("Unrecognized key %c %i \n", opt, opt);
+				exit(0);
+		}
+	}
 
     if (optind < argc) {
         printf ("элементы ARGV, не параметры: ");
@@ -250,6 +268,10 @@ while (1) {
 
 
 
+void printModelStruct(struct model_creating_struct* ma) {
+	printf("work_mode: %d protocol: %d port: %d\n", ma->work_mode, ma->protocol, ma->port);
+	printf("ip: %s\n", ma->ip);
+}
 
 //---Main function of controller
 /*
@@ -265,12 +287,47 @@ void ConcreteController::run(int argc, char **argv) {
 	//int v = 0;
     //int digit_optind = 0;
 	//in_addr ia;
-
-	fill_default(mod);
+	initModelStructure(&mod);
+	printModelStruct(&mod);
  	parsingArguments(argc, argv,&mod);
-	makeDecision(&mod);
+	initDefaultModelStructure(&mod);
+	printModelStruct(&mod);
+	chooseModelType(&mod);
     exit (0);
 }
 
 
 
+/**
+  * 	Initialize model struct
+  */
+void ConcreteController::initModelStructure(struct model_creating_struct *ma) {
+	ma->work_mode = WORK_MODE_UNDEFINED;
+	ma->protocol = PROTOCOL_UNDEFINED;
+	ma->port = DEFAULT_PORT;
+	ma->ip = new char[50];
+	strcpy(ma->ip, DEFAULT_IP);
+}
+
+
+
+/**
+  * 	Fulfill clear vars in model struct
+  */
+void ConcreteController::initDefaultModelStructure(struct model_creating_struct *ma) {
+	if (ma->work_mode == WORK_MODE_UNDEFINED) {
+		ma->work_mode = WORK_MODE_SERVER;
+	}
+
+	if (ma->protocol == PROTOCOL_UNDEFINED) {
+		ma->protocol = PROTOCOL_TCP;	
+	}
+
+} 
+
+
+//-----Filling the strust by default
+/*int fill_default(model_creating_struct &m)
+{
+	eturn 0;
+};*/
