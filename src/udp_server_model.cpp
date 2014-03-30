@@ -27,6 +27,8 @@ UdpServerModel::UdpServerModel() {
     receive_time_sec = 0;
     //start_receive_time_sec = end_receive_time_sec = 0;
 	end_udp_data_flag = 0;
+	port = DEFAULT_PORT;
+	system_port = DEFAULT_SYSTEM_PORT;
 }
 
 
@@ -72,12 +74,12 @@ void UdpServerModel::run() {
   *		This function provides pre configuration
   *		Do not touch now
   */
-void UdpServerModel::configure(struct configure_struct *configuration_struct) {
+void UdpServerModel::configure(struct model_configuration_struct *configuration_struct) {
 	if (configuration_struct == NULL) {
 		printf("UDP_server: model config error!\n");
 		exit(1);
 	}
-
+	printf("UDP_server: configuration!\n"); 
 }
 
 
@@ -144,7 +146,7 @@ int UdpServerModel::createControlDataSocket() {
 void UdpServerModel::configureDataSocket() {
 	memset(&flood_data_socket_config, 0, sizeof(flood_data_socket_config));
 	flood_data_socket_config.sin_family = AF_INET;
-	flood_data_socket_config.sin_port = htons(DEFAULT_PORT);
+	flood_data_socket_config.sin_port = htons(port);
 	flood_data_socket_config.sin_addr.s_addr = htonl(INADDR_ANY);
 }
 
@@ -157,7 +159,7 @@ void UdpServerModel::configureDataSocket() {
 void UdpServerModel::configureControlDataSocket() {
 	memset(&control_data_socket_config, 0, sizeof(control_data_socket_config));
 	control_data_socket_config.sin_family = AF_INET;
-	control_data_socket_config.sin_port = htons(DEFAULT_SYSTEM_PORT);
+	control_data_socket_config.sin_port = htons(system_port);
 	control_data_socket_config.sin_addr.s_addr = htonl(INADDR_ANY);
 }
 

@@ -11,8 +11,12 @@ using namespace std;
 int main (int argc, char **argv) {
 
 //Controller test
+	Model *model;
 	ConcreteController *controller = new ConcreteController();
 	controller->run(argc, argv);
+	model = controller->getModel();
+	model->run();
+
 
 
 /*
@@ -23,8 +27,8 @@ int main (int argc, char **argv) {
 
 
 //	Molient/Server
-	Model *model = new UdpServerModel(); 
-	model->run();
+/*	Model *model = new UdpServerModel(); 
+	model->run();*/
 
 	printf("Iperf ready\n");
 	return 0;

@@ -8,6 +8,10 @@
 UdpClientModel::UdpClientModel() {
 	printf("Udp client created!\n");
 	packet_count = DEFAULT_PACKET_COUNT;
+	port = DEFAULT_PORT;
+	system_port = DEFAULT_SYSTEM_PORT;
+	host_ip_address = new char[50];
+	strcpy(host_ip_address, DEFAULT_IP);
 }
 
 
@@ -40,11 +44,12 @@ void UdpClientModel::run() {
   *		This function provides pre configuration
   *		Do not touch now
   */
-void UdpClientModel::configure(struct configure_struct *configuration_struct) {
+void UdpClientModel::configure(struct model_configuration_struct *configuration_struct) {
 	if (configuration_struct == NULL) {
 		printf("UDP_Client: model config error!\n");
 		exit(1);
 	}
+	printf("UDP_client: configuration!\n"); 
 
 }
 
@@ -81,9 +86,9 @@ int UdpClientModel::createDataSocket() {
 void UdpClientModel::configureDataSocket() {
 	memset(&data_socket_config, 0, sizeof(data_socket_config));
 	data_socket_config.sin_family = AF_INET;
-	data_socket_config.sin_port = htons(DEFAULT_PORT);
+	data_socket_config.sin_port = htons(port);
 
-	if (!(inet_aton(DEFAULT_IP, &data_socket_config.sin_addr))) {
+	if (!(inet_aton(host_ip_address, &data_socket_config.sin_addr))) {
 		printf("UDP_client: Error, ivalid IP: error code: %d\n", errno);
 		exit(1);
 	}
@@ -227,9 +232,9 @@ int UdpClientModel::createSystemDataSocket() {
 void UdpClientModel::configureSystemDataSocket() {
 	memset(&data_socket_config, 0, sizeof(data_socket_config));
 	system_data_socket_config.sin_family = AF_INET;
-	system_data_socket_config.sin_port = htons(DEFAULT_SYSTEM_PORT);
+	system_data_socket_config.sin_port = htons(system_port);
 
-	if (!(inet_aton(DEFAULT_IP, &system_data_socket_config.sin_addr))) {
+	if (!(inet_aton(host_ip_address, &system_data_socket_config.sin_addr))) {
 		printf("UDP_client: Error, ivalid IP: error code: %d\n", errno);
 		exit(1);
 	}

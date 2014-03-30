@@ -1,5 +1,5 @@
 #pragma once
-#include "info_types.h"
+#include "model_configuration.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -15,5 +15,5 @@
 class Model {
 	public:
 		virtual void run() {};
-		virtual void configure(struct configure_struct *) {};
+		virtual void configure(struct model_configuration_struct *) {};
 };

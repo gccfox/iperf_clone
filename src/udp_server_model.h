@@ -28,13 +28,16 @@ class UdpServerModel : public Model {
 
 	int							end_udp_data_flag;
 
+	int							port;
+	int							system_port;
+
     //---data receiver thread 
     pthread_t                   flood_data_thread;
 	
 	public:
 		UdpServerModel();
 		virtual void run();
-		virtual void configure(struct configure_struct *);
+		virtual void configure(struct model_configuration_struct *);
 	
 	private:
 		void bindSocket(int socket, struct sockaddr_in *socket_config);

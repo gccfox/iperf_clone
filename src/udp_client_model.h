@@ -15,10 +15,14 @@ class UdpClientModel : public Model {
 	struct sockaddr_in			system_data_socket_config;
 	int 						packet_count;
 
+	int 						port;
+	int							system_port;
+	char 						*host_ip_address;
+
 	public:
 		UdpClientModel();
 		virtual void run();
-		virtual void configure(struct configure_struct *);
+		virtual void configure(struct model_configuration_struct *);
 
 	private:
 

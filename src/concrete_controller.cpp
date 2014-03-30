@@ -3,7 +3,7 @@
 
 
 //-----Trying to create Udp Server
-bool ConcreteController::checkUdpServer(struct model_creating_struct *mo)
+bool ConcreteController::checkUdpServer(struct model_configuration_struct *mo)
 {
 	printf("Checking for Udp Server Model!\n");
 	if ((mo->work_mode == WORK_MODE_SERVER) && (mo->protocol == PROTOCOL_UDP) ) {
@@ -18,7 +18,7 @@ bool ConcreteController::checkUdpServer(struct model_creating_struct *mo)
 
 
 //-----Trying to create Udp Client
-bool ConcreteController::checkUdpClient(struct model_creating_struct *mo)
+bool ConcreteController::checkUdpClient(struct model_configuration_struct *mo)
 {
 	printf("Checking for Udp Client Model!\n");
 	if ((mo->work_mode == WORK_MODE_CLIENT) && (mo->protocol == PROTOCOL_UDP) ) {
@@ -33,7 +33,7 @@ bool ConcreteController::checkUdpClient(struct model_creating_struct *mo)
 
 
 //-----Trying to create Tcp Client
-bool ConcreteController::checkTcpClient(struct model_creating_struct *mo)
+bool ConcreteController::checkTcpClient(struct model_configuration_struct *mo)
 {
 	printf("Checking for Tcp Client Model!\n");
 	if ((mo->work_mode == WORK_MODE_CLIENT) && (mo->protocol == PROTOCOL_TCP) ) {
@@ -48,7 +48,7 @@ bool ConcreteController::checkTcpClient(struct model_creating_struct *mo)
 
 
 //-----Trying to create Tcp Server	
-bool ConcreteController::checkTcpServer(struct model_creating_struct *mo)
+bool ConcreteController::checkTcpServer(struct model_configuration_struct *mo)
 {
 	if ((mo->work_mode == WORK_MODE_SERVER) && (mo->protocol == PROTOCOL_TCP) ) {
 		printf("TCP server accepted!\n");
@@ -62,7 +62,7 @@ bool ConcreteController::checkTcpServer(struct model_creating_struct *mo)
 
 
 //----Creating Model
-Model* ConcreteController::chooseModelType(struct model_creating_struct *mod){
+Model* ConcreteController::chooseModelType(struct model_configuration_struct *mod){
 	Model* result = NULL;
 
 	printf("Thinking about model\n");
@@ -132,7 +132,7 @@ void ConcreteController::printHelpPage() {
 
 
 //----Function to parse the string of arguments
-void ConcreteController::parsingArguments(int argc, char **argv, model_creating_struct *mo){
+void ConcreteController::parsingArguments(int argc, char **argv, model_configuration_struct *mo){
 	int opt;
 	int v = 0;
 	int digit_optind = 0;
@@ -267,9 +267,9 @@ void ConcreteController::parsingArguments(int argc, char **argv, model_creating_
 
 
 /**
-  *		*DEBUG* print debug info about model_creating_struct
+  *		*DEBUG* print debug info about model_configuration_struct
   */
-void printModelStruct(struct model_creating_struct* ma) {
+void printModelStruct(struct model_configuration_struct* ma) {
 	printf("work_mode: %d protocol: %d port: %d\n", ma->work_mode, ma->protocol, ma->port);
 	printf("ip: %s\n", ma->ip);
 }
@@ -283,20 +283,20 @@ void printModelStruct(struct model_creating_struct* ma) {
 */
 void ConcreteController::run(int argc, char **argv) {
 	printf("All that we see is an all that we think about\n"); 
-	model_creating_struct mod; 
+	model_configuration_struct mod; 
 	initModelStructure(&mod);
 	//printModelStruct(&mod);
  	parsingArguments(argc, argv,&mod);
 //	printModelStruct(&mod);
-	chooseModelType(&mod);
+	model = chooseModelType(&mod);
+	model->configure(&mod);
 }
-
 
 
 /**
   * 	Initialize model struct with default values
   */
-void ConcreteController::initModelStructure(struct model_creating_struct *ma) {
+void ConcreteController::initModelStructure(struct model_configuration_struct *ma) {
 	ma->work_mode = WORK_MODE_SERVER;
 	ma->protocol = PROTOCOL_UDP;
 	ma->port = DEFAULT_PORT;
@@ -317,3 +317,10 @@ void ConcreteController::checkFlagSet(bool &flag) {
 	}
 }
 
+
+/**
+  * 	Return created model
+  */
+Model *ConcreteController::getModel() {
+	return model;
+}

@@ -22,19 +22,20 @@
 	configure and run models
 */
 class ConcreteController : public Controller { 
+	Model *model;
 
 	public:
 		ConcreteController();
 		~ConcreteController();
 		void run(int argc, char **argv);
-		Model *chooseModelType(struct model_creating_struct *mod);
-		bool checkTcpServer(struct model_creating_struct *mo);
-		bool checkTcpClient(struct model_creating_struct *mo);
-		bool checkUdpServer(struct model_creating_struct *mo);
-		bool checkUdpClient(struct model_creating_struct *mo);	
-		void parsingArguments(int argc, char **argv, model_creating_struct *mo);	
+		Model *chooseModelType(struct model_configuration_struct *mod);
+		bool checkTcpServer(struct model_configuration_struct *mo);
+		bool checkTcpClient(struct model_configuration_struct *mo);
+		bool checkUdpServer(struct model_configuration_struct *mo);
+		bool checkUdpClient(struct model_configuration_struct *mo);	
+		void parsingArguments(int argc, char **argv, model_configuration_struct *mo);	
 		void printHelpPage();
-		void initModelStructure(struct model_creating_struct *mo);
+		void initModelStructure(struct model_configuration_struct *mo);
 		void checkFlagSet(bool &flag);
-			//Model *get_model(struct model_creating_struct *mod);
+		Model *getModel();
 };
