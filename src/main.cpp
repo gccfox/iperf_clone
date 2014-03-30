@@ -4,7 +4,6 @@
 #include "udp_client_model.h"
 #include "tcp_server_model.h"
 #include "udp_server_model.h"
-#include "concrete_controller.cpp"
 #include "concrete_controller.h"
 #include "error_view.h"
 using namespace std;

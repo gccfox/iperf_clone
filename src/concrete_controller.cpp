@@ -17,10 +17,10 @@
 
 
 using namespace std;
-//---Controller constructor
 
 
 
+//-----Trying to create Udp Server
 int ConcreteController::checkUdpServer(struct model_creating_struct *m)
 {
 	printf("Checking for Udp Server Model!\n");
@@ -44,6 +44,9 @@ int ConcreteController::checkUdpServer(struct model_creating_struct *m)
 
 }
 
+
+
+//-----Trying to create Udp Client
 int ConcreteController::checkUdpClient(struct model_creating_struct *m)
 {
 	printf("Checking for Udp Client Model!\n");
@@ -66,6 +69,9 @@ int ConcreteController::checkUdpClient(struct model_creating_struct *m)
 
 }
 
+
+
+//-----Trying to create Tcp Client
 int ConcreteController::checkTcpClient(struct model_creating_struct *m)
 {
 	printf("Checking for Tcp Client Model!\n");
@@ -86,7 +92,10 @@ int ConcreteController::checkTcpClient(struct model_creating_struct *m)
         }
 
 }
-	
+
+
+
+//-----Trying to create Tcp Server	
 int ConcreteController::checkTcpServer(struct model_creating_struct *m)
 {
 	printf("Checking for Tcp Server Model!\n");
@@ -107,6 +116,8 @@ int ConcreteController::checkTcpServer(struct model_creating_struct *m)
 	}
 }
 
+
+//-----Filling the strust by default
 int fill_default(model_creating_struct &m);
 int fill_default(model_creating_struct &m)
 {
@@ -120,7 +131,10 @@ int fill_default(model_creating_struct &m)
         return 0;
 };
 
-Model* ConcreteController::MakeDecision(struct model_creating_struct *mod){
+
+
+//----Creating Model
+Model* ConcreteController::makeDecision(struct model_creating_struct *mod){
 	
 printf("Thinking about model\n");
 
@@ -156,29 +170,20 @@ ConcreteController::ConcreteController() {
 }
 
 
+
 //---Destructor
 ConcreteController::~ConcreteController() {
 	printf("Controller died\n");
 }
 
-//---Main function of controller
-/*
-	This function check parameters, make configuration struct, 
-	Create and configure model 
-*/
-void ConcreteController::run(int argc, char **argv) {
-	printf("All that we see is an all that we think about\n");
-	
 
-	model_creating_struct mo;
-	int c;
-	int v = 0;
-    	int digit_optind = 0;
-	in_addr ia;
-	
-	fill_default(mo);
-
-    while (1) {
+//----Function to parse the string of arguments
+void parsingArguments(int argc, char **argv, model_creating_struct *mo){
+int c;
+int v = 0;
+int digit_optind = 0;
+in_addr ia;
+while (1) {
          int this_option_optind = optind ? optind : 1;
          int option_index = 0;
 
@@ -203,52 +208,50 @@ void ConcreteController::run(int argc, char **argv) {
                 if(optarg)
                 printf("с аргументом %s", optarg);
                 printf("\n");
-                break;
+        break;
         case 'p':
-            	printf ("Port was : `%d'\n", mo.port);
-        	mo.port = atoi(optarg);
-		//printf("%d\n");
-        	printf ("Port now :%d\n",mo.port);
-            	break;
+            	printf ("Port was : `%d'\n", mo->port);
+        		mo->port = atoi(optarg);
+        		printf ("Port now :%d\n",mo->port);
+        break;
 
-	 case 'i':
-            	printf ("IP was:  `%s'\n", mo.ip);
-		v=inet_aton(optarg,&ia);
-		if(v!=0)
-	{
-		mo.ip = optarg;
-		printf("IP now: `%s'\n", mo.ip);
-
-	}else
-	printf("Bad argument fo ip");
-            	break;
+	 	case 'i':
+        	printf ("IP was:  `%s'\n", mo->ip);
+			v=inet_aton(optarg,&ia);
+			if(v!=0){
+				mo->ip = optarg;
+				printf("IP now: `%s'\n", mo->ip);
+			}else
+				printf("Bad argument fo ip");
+    	break;
 
         case 's':
             	printf ("Server mode: on! \n");
-                mo.server_mode = 1;
-                break;
+                mo->server_mode = 1;
+        break;
 
         case 'u':
             	printf ("UDP mode: on! \n");
-            	mo.model = 1;
+            	mo->model = 1;
 		break;
+
         case 'l':
             	printf ("Pocket casualties are going to be counted\n");
-       		break;
+       	break;
 
-	case 'b':
-                mo.size = atoi(optarg);
-            printf ("Pocket size:  `%s'\n", optarg);
-                break;
+		case 'b':
+            	mo->size = atoi(optarg);
+            	printf ("Pocket size:  `%s'\n", optarg);
+        break;
 
         case 'c':
             	printf ("The number of pockets is:  `%s'\n", optarg);
-		mo.count = atoi(optarg);
+				mo->count = atoi(optarg);
 		break;
 
-	case '?':
-		printf("Unknown key. Please, be sure, you know what you do\n");
-            	break;
+		case '?':
+				printf("Unknown key. Please, be sure, you know what you do\n");
+        break;
 
         default:
 		break;
@@ -259,11 +262,33 @@ void ConcreteController::run(int argc, char **argv) {
     if (optind < argc) {
         printf ("элементы ARGV, не параметры: ");
         while (optind < argc)
-        printf ("%s ", argv[optind++]);
+        	printf ("%s ", argv[optind++]);
         printf ("\n");
     }
-printf("%d\n", mo.model);
-MakeDecision(&mo);
+
+}
+
+
+
+
+//---Main function of controller
+/*
+	This function check parameters, make configuration struct, 
+	Create and configure model 
+*/
+void ConcreteController::run(int argc, char **argv) {
+	printf("All that we see is an all that we think about\n");
+	
+
+	model_creating_struct mod;
+	int c;
+	int v = 0;
+    int digit_optind = 0;
+	in_addr ia;
+	
+	fill_default(mod);
+ parsingArguments(argc, &argv,&mod);
+ makeDecision(&mod);
     exit (0);
 }
 
