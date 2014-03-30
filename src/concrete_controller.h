@@ -1,15 +1,19 @@
 #pragma once
+#include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
+#include <getopt.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
 #include "controller.h"
 #include "struct.h"
 #include "tcp_client_model.h"
 #include "udp_client_model.h"
 #include "tcp_server_model.h"
 #include "udp_server_model.h"
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 
 
 
