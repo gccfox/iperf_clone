@@ -1,11 +1,4 @@
 //#define _BSD_SOURCE
-#pragma once
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <getopt.h>
-#include <iostream>
-#include "struct.h"
 #include "concrete_controller.h" 
 
 
@@ -121,7 +114,8 @@ int fill_default(model_creating_struct &m)
         m.size = 0;
         m.model = 0;
         m.port = 3409;
-        m.ip = "127.0.0.1";
+		m.ip = new char[50];
+		strcpy(m.ip, "127.0.0.1");
         return 0;
 };
 
@@ -129,26 +123,23 @@ int fill_default(model_creating_struct &m)
 
 //----Creating Model
 Model* ConcreteController::makeDecision(struct model_creating_struct *mod){
+	Model* result = NULL;
 	
-printf("Thinking about model\n");
+	printf("Thinking about model\n");
 
-if(ConcreteController::checkTcpServer(mod)==1)
-	Model *tcp_server = new TcpServerModel();
-return tcp_server;
+	if (checkTcpServer(mod))
+		result = new TcpServerModel();
 
-if(ConcreteController::checkUdpServer(mod)==1)
-	Model *udp_server = new UdpServerModel();
-return udp_server;
+	if (checkUdpServer(mod))
+		result = new UdpServerModel();
 
-if(ConcreteController::checkTcpClient(mod)==1)
-	Model *tcp_client = new TcpClientModel();
-return tcp_client;
-				
-if(ConcreteController::checkUdpClient(mod)==1)
-	Model *udp_client = new UdpClientModel();
-return udp_client;
-	
-exit(0);
+	if (checkTcpClient(mod))
+		result = new TcpClientModel();
+					
+	if (checkUdpClient(mod))
+		result = new UdpClientModel();
+		
+	return result;
 }
 
 
@@ -276,9 +267,11 @@ void ConcreteController::run(int argc, char **argv) {
 	in_addr ia;
 	
 	fill_default(mod);
- parsingArguments(argc, argv,&mod);
- makeDecision(&mod);
+ 	parsingArguments(argc, argv,&mod);
+	makeDecision(&mod);
     exit (0);
 }
 
 
+void ConcreteController::parseArguments(int argc, char **argv, model_creating_struct *mo) {
+}

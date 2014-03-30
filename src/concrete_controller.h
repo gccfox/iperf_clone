@@ -1,15 +1,19 @@
 #pragma once
+#include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
+#include <getopt.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
 #include "controller.h"
 #include "struct.h"
 #include "tcp_client_model.h"
 #include "udp_client_model.h"
 #include "tcp_server_model.h"
 #include "udp_server_model.h"
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 
 
 
@@ -28,6 +32,6 @@ class ConcreteController : public Controller {
 		int checkTcpClient(struct model_creating_struct *mod);
 		int checkUdpServer(struct model_creating_struct *mod);
 		int checkUdpClient(struct model_creating_struct *mod);	
-		void parsingArguments(int argc, char **argv, model_creating_struct *mo);	
+		void parseArguments(int argc, char **argv, model_creating_struct *mo);	
 		//Model *get_model(struct model_creating_struct *mod);
 };
