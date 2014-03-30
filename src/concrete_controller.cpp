@@ -2,11 +2,6 @@
 #include "concrete_controller.h" 
 
 
-
-using namespace std;
-
-
-
 //-----Trying to create Udp Server
 bool ConcreteController::checkUdpServer(struct model_creating_struct *mo)
 {
@@ -63,8 +58,6 @@ bool ConcreteController::checkTcpServer(struct model_creating_struct *mo)
 	printf("TCP server not accepted!\n"); 
 	return false; 
 }
-
-
 
 
 
