@@ -1,19 +1,5 @@
 #include "tcp_server_model.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <sys/wait.h>
-#include <signal.h>
-#include <time.h>
-#include <ctime>
-#include <iostream>
+
 
 //structure with data
 struct msg{
@@ -31,7 +17,7 @@ TcpServerModel::TcpServerModel() {
 }
 
 
-void TcpServerModel::TcpSocketCreating(int &lis,struct sockaddr_in add) {
+void TcpServerModel::createTcpSocket(int &lis,struct sockaddr_in add) {
 	lis = socket(AF_INET, SOCK_STREAM, 0);//descriptor of listening socket
     
 	if(lis < 0){ //catching error in creating of socket
@@ -52,7 +38,7 @@ void TcpServerModel::TcpSocketCreating(int &lis,struct sockaddr_in add) {
 }
 
 
-void TcpServerModel::TcpAccepting(int &lis,int &s, clock_t ti1, clock_t ti2, struct msg b)
+void TcpServerModel::acceptTcp(int &lis,int &s, clock_t ti1, clock_t ti2, struct msg b)
 {
 
 	int bytes_read;
@@ -109,7 +95,7 @@ void TcpServerModel::run() {
 	k = 0;
 	t1 = clock();
 
-	TcpServerModel::TcpSocketCreating(listener, addr);
+	TcpServerModel::createTcpSocket(listener, addr);
     listen(listener, 1);//Listening of port
 
     printf("Listening...\n");
