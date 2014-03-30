@@ -1,6 +1,3 @@
-/*
-*	Just a constructor 
-*/
 #define CLIENT_PORT 3409
 #define N 100000
 #include "tcp_client_model.h"
@@ -20,7 +17,7 @@ TcpClientModel::TcpClientModel() {
 
 
 void TcpClientModel::defaultConfigure(){
-//    TcpClientModel.conf.ip = "192.168.1.4";
+    this->conf.ip = "192.168.1.4";
     //TcpClientModel.conf.numberOfPackages = 16;    
 }
 
@@ -30,24 +27,31 @@ void TcpClientModel::defaultConfigure(){
 */
 int TcpClientModel::createConnection(int &sock) //conection creat function
 {
+  //printf("Create Connection \n");
   struct sockaddr_in addr;
+  //printf("struct created \n");
   int flag = 0;
   if((sock = socket(AF_INET, SOCK_STREAM, 0))<0)
     flag = 1;
+  //printf("Socket created \n");
   addr.sin_family = AF_INET;
   addr.sin_port = htons(CLIENT_PORT);
-  if(inet_aton(conf.ip, &addr.sin_addr) == 0)
+//  printf("port and family fill\n");
+  if(inet_aton(this->conf.ip, &addr.sin_addr) == 0)
     flag = 1;
+  //printf("IP address converted\n");
   if(connect(sock,(struct sockaddr *)&addr,sizeof(addr))<0)
     flag = 1;
+  printf("Connection done");
   return flag;
 }
 int TcpClientModel::sendInformation(int sockfd)
 {
+//    printf("Send Information\n");
     int count = 0;
     int nn = N;
   //  me.all = N;
-    if(send(sockfd,(void *)& nn, sizeof(int), 0)==0){
+    if(send(sockfd,(void *)&nn, sizeof(int), 0)==-1){
       printf("Error with sending initializes package\n");
       exit(1);
     }

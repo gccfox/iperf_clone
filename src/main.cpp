@@ -23,9 +23,10 @@ int main(int argc, char **argv) {
 
 /*
 //	Model test. 
-*	Model *model = new UdpServerModel();
-*	model->run();
 */
+Model *model = new TcpClientModel();
+	model->run();
+
 	printf("Iperf ready\n");
 	return 0;
 }
