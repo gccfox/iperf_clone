@@ -1,19 +1,19 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "concrete_controller.h"
 #include "tcp_client_model.h"
 #include "udp_client_model.h"
 #include "tcp_server_model.h"
 #include "udp_server_model.h"
+#include "concrete_controller.h"
 #include "error_view.h"
+using namespace std;
 
+int main (int argc, char **argv) {
 
-int main(int argc, char **argv) {
-/*
-//	Controller test
-*	Controller *controller = new ConcreteController();
-*	controller->run(argc, argv);
-*/
+//Controller test
+	ConcreteController *controller = new ConcreteController();
+	controller->run(argc, argv);
+
 
 /*
 //	View test

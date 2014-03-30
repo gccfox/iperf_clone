@@ -1,7 +1,8 @@
 #define INFO_TYPES_H	1
 //---Specify model configuration options, settin by controller
 struct model_options {
-	int model_type;
+	int model_type;//udp=1, tcp=0
 	int port;
+	int server_mode;
 };
 

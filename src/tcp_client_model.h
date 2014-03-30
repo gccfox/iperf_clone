@@ -1,3 +1,4 @@
+#pragma once
 #ifndef MODEL_H
 	#include "model.h"
 #endif
