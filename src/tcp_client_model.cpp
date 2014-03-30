@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 struct sending
 {
-    int all;
+//    int all;
     int that;
     int size;
     char self;
@@ -45,7 +45,11 @@ int TcpClientModel::createConnection(int &sock) //conection creat function
 int TcpClientModel::sendInformation(int sockfd)
 {
     int count = 0;
-    me.all = N;
+  //  me.all = N;
+    if(send(sockfd, N, sizeof(int),0)==0){
+      printf("Error with sending initializes package\n");
+      exit(1);
+    }
     for(int i = 0; i <= N; i++)
     {
         me.that = i;
