@@ -73,16 +73,16 @@ void  TcpClientModel::printStatistic(int sent)
   printf("Sent without any problems - %d\n", sent);
 }
 void TcpClientModel::run() {
-    TcpClientModel::defaultConfigure();
+    defaultConfigure();
     int i;
     int count = 0;
     int sockfd;
-    if(TcpClientModel::createConnection(sockfd))
+    if(createConnection(sockfd))
     {
       printf("Create connection errror!\n");
       exit(1);
     }
-    TcpClientModel::printStatistic(TcpClientModel::sendInformation(sockfd));
+    printStatistic(TcpClientModel::sendInformation(sockfd));
     close(sockfd);
 }
 
