@@ -45,8 +45,9 @@ int TcpClientModel::createConnection(int &sock) //conection creat function
 int TcpClientModel::sendInformation(int sockfd)
 {
     int count = 0;
+    int nn = N;
   //  me.all = N;
-    if(send(sockfd, N, sizeof(int),0)==0){
+    if(send(sockfd,(void *)& nn, sizeof(int), 0)==0){
       printf("Error with sending initializes package\n");
       exit(1);
     }
