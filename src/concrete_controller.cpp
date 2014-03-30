@@ -132,22 +132,25 @@ Model* ConcreteController::makeDecision(struct model_creating_struct *mod){
 	
 printf("Thinking about model\n");
 
-if(ConcreteController::checkTcpServer(mod)==1)
+if(ConcreteController::checkTcpServer(mod)==1){
 	Model *tcp_server = new TcpServerModel();
-return tcp_server;
+	return tcp_server;
+}
 
-if(ConcreteController::checkUdpServer(mod)==1)
+if(ConcreteController::checkUdpServer(mod)==1){
 	Model *udp_server = new UdpServerModel();
-return udp_server;
+	return udp_server;
+}
 
-if(ConcreteController::checkTcpClient(mod)==1)
+if(ConcreteController::checkTcpClient(mod)==1){
 	Model *tcp_client = new TcpClientModel();
-return tcp_client;
+	return tcp_client;
+}
 				
-if(ConcreteController::checkUdpClient(mod)==1)
+if(ConcreteController::checkUdpClient(mod)==1){
 	Model *udp_client = new UdpClientModel();
-return udp_client;
-	
+	return udp_client;
+}	
 exit(0);
 }
 
