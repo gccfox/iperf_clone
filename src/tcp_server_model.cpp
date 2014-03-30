@@ -84,13 +84,12 @@ void TcpServerModel::acceptTcp(int &lis,int &s, clock_t ti1, clock_t ti2, struct
 *	Place your code here
 */
 void TcpServerModel::run() {
-	//TcpServerModel::configure();
 	clock_t t1, t2;
 	int y,i,k;
 	int n[100];
-    int sock, listener;
-    struct sockaddr_in addr;
-    int bytes_read;
+    	int sock, listener;
+    	struct sockaddr_in addr;
+    	int bytes_read;
 	struct msg buf;
 	k = 0;
 	t1 = clock();
@@ -100,7 +99,7 @@ void TcpServerModel::run() {
 
     printf("Listening...\n");
 
-	TcpServerModel::TcpAccepting(listener,sock,t1,t2,buf);   
+	TcpServerModel::acceptTcp(listener,sock,t1,t2,buf);   
 }
 
 

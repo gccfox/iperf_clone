@@ -21,11 +21,11 @@ int main(int argc, char **argv) {
 *	err_view->print((void *)"wrong argument");
 */
 
-/*
+
 //	Model test. 
-*	Model *model = new UdpServerModel();
-*	model->run();
-*/
+	Model *model = new TcpServerModel();
+	model->run();
+
 	printf("Iperf ready\n");
 	return 0;
 }

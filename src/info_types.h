@@ -1,3 +1,4 @@
+#pragma once
 #define INFO_TYPES_H	1
 //---Specify model configuration options, settin by controller
 struct model_options {

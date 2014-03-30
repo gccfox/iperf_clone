@@ -1,3 +1,4 @@
+#pragma once
 #ifndef MODEL_H
 	#include "model.h"
 	#include <stdio.h>
@@ -25,8 +26,8 @@
 class TcpServerModel : public Model {
 	public:
 		TcpServerModel();
-		//virtual void run();
-		virtual void configure(struct configure_struct *);
-		virtual void TcpSocketCreating(int &lis, struct sockaddr_in add); 
-		virtual void TcpAccepting(int &lis,int &s, clock_t ti1, clock_t ti2, struct msg b);
+		virtual void run();
+		void configure(struct configure_struct *);
+		void createTcpSocket(int &lis, struct sockaddr_in add); 
+		void acceptTcp(int &lis,int &s, clock_t ti1, clock_t ti2, struct msg b);
 };
