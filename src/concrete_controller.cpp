@@ -7,13 +7,7 @@
 #include <iostream>
 #include "struct.h"
 #include "concrete_controller.h" 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include "tcp_client_model.h"
-#include "udp_client_model.h"
-#include "tcp_server_model.h"
-#include "udp_server_model.h"
+
 
 
 using namespace std;
@@ -138,27 +132,22 @@ Model* ConcreteController::makeDecision(struct model_creating_struct *mod){
 	
 printf("Thinking about model\n");
 
-if(!ConcreteController::checkTcpServer(mod)==1)
-{
-	if(!ConcreteController::checkUdpServer(mod)==1)
-		{	if(!ConcreteController::checkTcpClient(mod)==1)
-			{
-				ConcreteController::checkUdpClient(mod);
-				Model *udp_client = new UdpClientModel();
-				return udp_client;
-			}else{
-				Model *tcp_client = new TcpClientModel();
-			     	return tcp_client;
-				}
-		}else{
-			Model *udp_server = new UdpServerModel();
-		     	return udp_server;
-			}
-}else{
+if(ConcreteController::checkTcpServer(mod)==1)
 	Model *tcp_server = new TcpServerModel();
-	return tcp_server;
-	}
+return tcp_server;
 
+if(ConcreteController::checkUdpServer(mod)==1)
+	Model *udp_server = new UdpServerModel();
+return udp_server;
+
+if(ConcreteController::checkTcpClient(mod)==1)
+	Model *tcp_client = new TcpClientModel();
+return tcp_client;
+				
+if(ConcreteController::checkUdpClient(mod)==1)
+	Model *udp_client = new UdpClientModel();
+return udp_client;
+	
 exit(0);
 }
 
@@ -287,7 +276,7 @@ void ConcreteController::run(int argc, char **argv) {
 	in_addr ia;
 	
 	fill_default(mod);
- parsingArguments(argc, &argv,&mod);
+ parsingArguments(argc, argv,&mod);
  makeDecision(&mod);
     exit (0);
 }

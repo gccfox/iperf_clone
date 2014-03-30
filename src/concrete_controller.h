@@ -3,6 +3,14 @@
 #include <stdio.h>
 #include "controller.h"
 #include "struct.h"
+#include "tcp_client_model.h"
+#include "udp_client_model.h"
+#include "tcp_server_model.h"
+#include "udp_server_model.h"
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
 
 
 /*---We have one controller. 

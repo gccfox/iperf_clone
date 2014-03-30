@@ -1,7 +1,6 @@
 #pragma once
 //---Specify model configuration options, settin by controller
 struct model_creating_struct{
-    //char ip[];
     int server_mode; //1-on 0-off
     int loss; //socket what was fuc*ed in process
     int count; //count of pockets
