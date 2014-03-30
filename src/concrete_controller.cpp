@@ -111,6 +111,11 @@ ConcreteController::~ConcreteController() {
 	printf("Controller died\n");
 }
 
+
+/**
+  *		Print help page on screen
+  *
+  */
 void ConcreteController::printHelpPage() {
 	printf("Usage iperf_clone [-c|-s] options\n\n");
 	printf("Client\\Server specific:\n");
@@ -131,6 +136,8 @@ void ConcreteController::printHelpPage() {
 	printf("Report bugs undefined_now@sst.com\n");
 }
 
+
+
 //----Function to parse the string of arguments
 void ConcreteController::parsingArguments(int argc, char **argv, model_creating_struct *mo){
 	int opt;
@@ -139,6 +146,12 @@ void ConcreteController::parsingArguments(int argc, char **argv, model_creating_
 	in_addr ia;
 	int option_index = 0;
 	int this_option_optind;
+
+	bool set_port_flag = false;
+	bool set_ip_flag = false;
+	bool set_packets_count_flag = false;
+	bool set_protocol_flag = false;
+	bool set_working_mode_flag = false;
 
     struct option long_options[] = {
             {"port", 1, NULL, 'p'},
@@ -169,19 +182,21 @@ void ConcreteController::parsingArguments(int argc, char **argv, model_creating_
 
 
 			case 'p':
+				checkFlagSet(set_port_flag);
 				printf ("Port was : `%d'\n", mo->port);
 				if ((mo->port = atoi(optarg)) < 0) {
 					printf("Error: poert expected int!\n");
 					exit(1);
-				} else if (mo->port <= 1000) {
-					printf("Error: port should be positive int more that 1000\n");
+				} else if ((mo->port <= 1000) || (mo->port > 65536)) {
+					printf("Error: port should be positive int more that 1000 and less that 65536\n");
 					exit(1);
-				}
+				} 
 				printf ("Port now :%d\n",mo->port);
 				break;
 
 
 			case 'i':
+				checkFlagSet(set_ip_flag);
 				printf ("IP was:  `%s'\n", mo->ip);
 				if ((v = inet_aton(optarg,&ia))) {
 					mo->ip = optarg;
@@ -194,45 +209,34 @@ void ConcreteController::parsingArguments(int argc, char **argv, model_creating_
 
 
 			case 'c':
-				if (mo->work_mode != WORK_MODE_UNDEFINED) {
-					printHelpPage();
-					exit(0);
-				}
+				checkFlagSet(set_working_mode_flag);
 				printf("Client mode on\n");
 				mo->work_mode = WORK_MODE_CLIENT;
 				break;
 
 
-			case 's':
-				if (mo->work_mode != WORK_MODE_UNDEFINED) {
-					printHelpPage();
-					exit(0);
-				}
+			case 's': 
+				checkFlagSet(set_working_mode_flag);
 				printf ("Server mode: on! \n");
 				mo->work_mode = WORK_MODE_SERVER;
 				break;
 
 
 			case 'u':
-				if (mo->protocol != PROTOCOL_UNDEFINED) {
-					printHelpPage();
-					exit(0);
-				}
+				checkFlagSet(set_protocol_flag);
 				printf ("UDP mode: on! \n");
 				mo->protocol = PROTOCOL_UDP; 
 				break;
 
 			case 't':
-				if (mo->protocol != PROTOCOL_UNDEFINED) {
-					printHelpPage();
-					exit(0);
-				}
+				checkFlagSet(set_protocol_flag);
 				printf ("TCP mode: on! \n");
 				mo->protocol = PROTOCOL_TCP;
 				break;
 
 
-			case 'l':
+			case 'l': 
+				checkFlagSet(set_packets_count_flag); 
 				int tmp;
 				if ((tmp = atoi(optarg)) < 0) {
 					printf("Error: number of packets should be int!\n");
@@ -268,10 +272,16 @@ void ConcreteController::parsingArguments(int argc, char **argv, model_creating_
 
 
 
+
+/**
+  *		*DEBUG* print debug info about model_creating_struct
+  */
 void printModelStruct(struct model_creating_struct* ma) {
 	printf("work_mode: %d protocol: %d port: %d\n", ma->work_mode, ma->protocol, ma->port);
 	printf("ip: %s\n", ma->ip);
 }
+
+
 
 //---Main function of controller
 /*
@@ -279,55 +289,38 @@ void printModelStruct(struct model_creating_struct* ma) {
 	Create and configure model 
 */
 void ConcreteController::run(int argc, char **argv) {
-	printf("All that we see is an all that we think about\n");
-
-
-	model_creating_struct mod;
-	//int c;
-	//int v = 0;
-    //int digit_optind = 0;
-	//in_addr ia;
+	printf("All that we see is an all that we think about\n"); 
+	model_creating_struct mod; 
 	initModelStructure(&mod);
-	printModelStruct(&mod);
+	//printModelStruct(&mod);
  	parsingArguments(argc, argv,&mod);
-	initDefaultModelStructure(&mod);
-	printModelStruct(&mod);
+//	printModelStruct(&mod);
 	chooseModelType(&mod);
-    exit (0);
 }
 
 
 
 /**
-  * 	Initialize model struct
+  * 	Initialize model struct with default values
   */
 void ConcreteController::initModelStructure(struct model_creating_struct *ma) {
-	ma->work_mode = WORK_MODE_UNDEFINED;
-	ma->protocol = PROTOCOL_UNDEFINED;
+	ma->work_mode = WORK_MODE_SERVER;
+	ma->protocol = PROTOCOL_UDP;
 	ma->port = DEFAULT_PORT;
 	ma->ip = new char[50];
 	strcpy(ma->ip, DEFAULT_IP);
 }
 
 
-
 /**
-  * 	Fulfill clear vars in model struct
+  * 	Check setting special option flag. If set show help page and quit
   */
-void ConcreteController::initDefaultModelStructure(struct model_creating_struct *ma) {
-	if (ma->work_mode == WORK_MODE_UNDEFINED) {
-		ma->work_mode = WORK_MODE_SERVER;
+void ConcreteController::checkFlagSet(bool &flag) {
+	if (flag) {
+		printHelpPage();
+		exit(0);
+	} else {
+		flag = true;
 	}
+}
 
-	if (ma->protocol == PROTOCOL_UNDEFINED) {
-		ma->protocol = PROTOCOL_TCP;	
-	}
-
-} 
-
-
-//-----Filling the strust by default
-/*int fill_default(model_creating_struct &m)
-{
-	eturn 0;
-};*/

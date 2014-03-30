@@ -35,6 +35,6 @@ class ConcreteController : public Controller {
 		void parsingArguments(int argc, char **argv, model_creating_struct *mo);	
 		void printHelpPage();
 		void initModelStructure(struct model_creating_struct *mo);
-		void initDefaultModelStructure(struct model_creating_struct *mo);
+		void checkFlagSet(bool &flag);
 			//Model *get_model(struct model_creating_struct *mod);
 };
