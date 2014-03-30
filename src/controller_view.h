@@ -3,6 +3,7 @@
 #include <info_types.h>
 #include <Controller_view_types.h>
 class ControllerView: public View{
+                View save_view;
                 void setView(View *view);
     	        void printError(void *error_struct);
 		void printInfo(void *info_struct);
