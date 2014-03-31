@@ -1,9 +1,7 @@
 #include "tcp_server_model.h"
-
-
 //structure with data
 struct msg{
-	int all;//number of datapockets
+//	int all;//number of datapockets
 	int that;//count of current datapocket
 	char self;//data
 	int size;//size of datapocket
@@ -26,7 +24,7 @@ void TcpServerModel::createTcpSocket(int &lis,struct sockaddr_in add) {
     }
     	
 	add.sin_family = AF_INET; //filling the structure
-	add.sin_port = htons(3409);
+	add.sin_port = htons(DEFAULT_PORT);
 	add.sin_addr.s_addr = htonl(INADDR_ANY);
     	
 	if ( bind (lis , (struct sockaddr *) & add , sizeof (add) ) < 0){
@@ -38,17 +36,23 @@ void TcpServerModel::createTcpSocket(int &lis,struct sockaddr_in add) {
 }
 
 
-void TcpServerModel::acceptTcp(int &lis,int &s, clock_t ti1, clock_t ti2, struct msg b)
+void TcpServerModel::acceptTcp(int lis,int &s, struct msg b)
 {
 
 	int bytes_read;
+	struct timespec time1;
+	struct timespec time2;
+	unsigned long int hope;
 	   while(1){//cyckle of listening  and accepting
-        	int k;
-			s = accept(lis, NULL, NULL);
-        
-			if(s < 0){
-            	perror("accepting error\n");
-            	exit(3);
+ 	  	clock_gettime(0, &time1);
+	 	long int k;
+		//printf("%d\n", time1.tv_nsec);
+		k = 0;
+		s = accept(lis, NULL, NULL);
+        	printf("Try");
+		if(s < 0){
+            		perror("accepting error\n");
+            		exit(3);
         	}
 			else
 				printf("Succesfull accepting\n");
@@ -56,50 +60,73 @@ void TcpServerModel::acceptTcp(int &lis,int &s, clock_t ti1, clock_t ti2, struct
 			printf("Accepting friendly forces\n");
 			printf("Reading...\n");
 			printf("------------\n");
+		long int g;
+		g=0;	
+			bytes_read = recv(s,(void *)&g, sizeof(int), 0);
+
+                                if(bytes_read <= 0){
+                                        //printf("End of Reading!\n");
+					break;
+                                }
+                                else{
+                                  	//k = k+1;
+					clock_gettime(0, &time2);
+					clock_gettime(0, &time1);
+					printf("%d\n", time2.tv_nsec);
+					         }
+
         	
-			while(1){ //cyckle of reading of datapockets
+			for(int i=0; i<g; i++){ //cyckle of reading of datapockets
             	bytes_read = recv(s,(void *)&b, sizeof(b), 0);
-            	
+            		
 				if(bytes_read <= 0){	
 					printf("End of Reading!\n");
-					break;
-				}
+					//k = k-1; 
+					//clock_gettime(3,&time2);
+					}
 				else{
-					printf("%d\n",k);
-					printf("%d\n",b.all);
 					k = k+1;
-					ti2 = clock();
+					//printf("%d : %d %d %d\n", ntohs(b.that), b.self, b.size, g);	
+					clock_gettime(0,&time2);
+					hope =  time2.tv_sec - time1.tv_sec;
+					printf("%d\n", hope);
+                                        printf("%d\n", time1.tv_nsec);
+					//printf("iteration -%d\n", k);
+                                        	
 				}
-			}	
-    		printf("%d\nClock is here",(ti2 - ti1)/10000);
-			printf("%d\n", (b.all - k));
-			ti1 = clock();
-			k = 0;
+			}
+		clock_gettime(0,&time2);
+		printf("Время работы в секундах:\n");
+	 	printf("%d\n",hope);
+		printf("Пакетов %d из %d получено\n",k,g);
+		unsigned int kb_speed = (k * sizeof(struct msg));
+		kb_speed = kb_speed/1024;
+		printf("Скорость - %d kbyte/s\n",kb_speed/hope);
+		k = 0;
+		clock_gettime(0,&time2);
         	close(s);
+		exit(0);
 	} 
 }
+
+
 
 /*
 *	Main function of tcp Server
 *	Place your code here
 */
 void TcpServerModel::run() {
-	clock_t t1, t2;
-	int y,i,k;
-	int n[100];
-    	int sock, listener;
+	int sock, listener;
     	struct sockaddr_in addr;
     	int bytes_read;
 	struct msg buf;
-	k = 0;
-	t1 = clock();
 
 	TcpServerModel::createTcpSocket(listener, addr);
     listen(listener, 1);//Listening of port
 
     printf("Listening...\n");
 
-	TcpServerModel::acceptTcp(listener,sock,t1,t2,buf);   
+	TcpServerModel::acceptTcp(listener,sock,buf);   
 }
 
 
