@@ -13,6 +13,10 @@ TcpServerModel::TcpServerModel() {
 	printf("Tcp Server created!\n");
 }
 
+/*
+*	Creating working socket of tcp Server
+*	Place your code here
+*/
 
 void TcpServerModel::createTcpSocket(int &lis,struct sockaddr_in add) {
 	lis = socket(AF_INET, SOCK_STREAM, 0);//descriptor of listening socket
@@ -34,6 +38,10 @@ void TcpServerModel::createTcpSocket(int &lis,struct sockaddr_in add) {
 		}
 }
 
+/*
+*	Accepting of Client
+*	Place your code here
+*/
 
 void TcpServerModel::acceptClient(int lis,int &s)
 {
@@ -51,6 +59,11 @@ void TcpServerModel::acceptClient(int lis,int &s)
 }
 
 
+/*
+*	Trying to get Initial Data Pocket
+*	Place your code here
+*/
+
 void TcpServerModel::receiveInitData(long int &number_of_pockets,int &s, struct msg b){
 int bytes_read;
 bytes_read = recv(s,(void *)&number_of_pockets, sizeof(int), 0);
@@ -60,6 +73,12 @@ if(bytes_read <= 0){
 	        printf("Successful received initial pocket\n");
                         }
 }
+
+
+/*
+*	Print speed of working server
+*	Place your code here
+*/
 
 void TcpServerModel::printSpeed(unsigned long int time, long int number_of_pockets)
 {
@@ -85,13 +104,24 @@ void TcpServerModel::printNumberOfPockets(unsigned long int count ,unsigned long
 	printf("Процент потерь: %d %\n",proc/number);
 }
 
+/*
+*	Print statistic of tcp Server
+*	Place your code here
+*/
+
 void TcpServerModel::printStatistic(unsigned long int time, long int number_of_pockets,unsigned long int count)
 {
 	TcpServerModel::printSpeed(time,number_of_pockets);
 	TcpServerModel::printTimeInSec(time);
 	TcpServerModel::printNumberOfPockets(count ,number_of_pockets);
 }
-void TcpServerModel::acceptTcp(int lis,int &s, struct msg structure_to_write)
+
+/*
+*	Main Reading of tcp Server
+*	Place your code here
+*/
+
+void TcpServerModel::readingTcp(int lis,int &s, struct msg structure_to_write)
 {
 
 	int bytes_read;
@@ -128,13 +158,12 @@ void TcpServerModel::acceptTcp(int lis,int &s, struct msg structure_to_write)
 				else{
 					count_of_pockets = count_of_pockets+1;
 					clock_gettime(0,&time2);
-					hope =  time2.tv_sec - time1.tv_sec;                              	
+					hope =  time2.tv_sec - time1.tv_sec;  		                           	
 				}
 			}
 		clock_gettime(0,&time2);
 		
 		TcpServerModel::printStatistic(hope, number_of_pockets, count_of_pockets);
-		
 		
 		count_of_pockets = 0;
 		clock_gettime(0,&time2);
@@ -161,7 +190,7 @@ void TcpServerModel::run() {
 
     printf("Listening...\n");
 
-	TcpServerModel::acceptTcp(listener,sock,buf);   
+	TcpServerModel::readingTcp(listener,sock,buf);   
 }
 
 
