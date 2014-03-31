@@ -10,7 +10,7 @@ struct msg{
 *	Just a constructor 
 */
 TcpServerModel::TcpServerModel() {
-	printf("Tcp Server created!\n");
+	//printf("Tcp Server created!\n");
 }
 
 /*
@@ -22,7 +22,7 @@ void TcpServerModel::createTcpSocket(int &lis,struct sockaddr_in add) {
 	lis = socket(AF_INET, SOCK_STREAM, 0);//descriptor of listening socket
     
 	if(lis < 0){ //catching error in creating of socket
-        perror("socket error\n");
+        perror("TCP_server: error socket creation\n");
         exit(1);
     }
     	
@@ -31,11 +31,9 @@ void TcpServerModel::createTcpSocket(int &lis,struct sockaddr_in add) {
 	add.sin_addr.s_addr = htonl(INADDR_ANY);
     	
 	if ( bind (lis , (struct sockaddr *) & add , sizeof (add) ) < 0){
-		perror( "binding error\n" ); //binding of socket and seeking for mistake
+		perror( "TCP_server: binding error\n" ); //binding of socket and seeking for mistake
     	exit(2);
-	}else{
-		printf("Succesfull binding\n");
-		}
+	}
 }
 
 /*
@@ -54,7 +52,7 @@ void TcpServerModel::acceptClient(int lis,int &s)
 		printf("Succesfull accepting\n");
 	}
 
-	printf("Accepting friendly forces\n");
+	//printf("Accepting friendly forces\n");
 
 }
 
@@ -68,9 +66,9 @@ void TcpServerModel::receiveInitData(long int &number_of_pockets,int &s, struct 
 	int bytes_read;
 	bytes_read = recv(s,(void *)&number_of_pockets, sizeof(int), 0);
 	if (bytes_read <= 0){
-		printf("Error in reading initial data\n");
+		printf("TCP_server: error in reading initial data\n");
     } else {
-		printf("Successful received initial pocket\n");
+		//printf("Successful received initial pocket\n");
 	}
 }
 
@@ -83,9 +81,6 @@ void TcpServerModel::receiveInitData(long int &number_of_pockets,int &s, struct 
 void TcpServerModel::printSpeed(long time, long number_of_pockets)
 {
 	double kb_speed = (number_of_pockets * sizeof(struct msg)) * 1000 / 1024 / time;
-	/*printf("speed: %d : %d %u %lu\n", number_of_pockets, kb_speed, kb_speed, kb_speed);
-	kb_speed = kb_speed * 1000 / 1024;
-	kb_speed = kb_speed / time;*/
 	if (kb_speed < 1000) {
 		printf("Скорость - %.4f Kbytes/s\n",kb_speed);
 	} else {
@@ -96,17 +91,16 @@ void TcpServerModel::printSpeed(long time, long number_of_pockets)
 
 void TcpServerModel::printTimeInSec(long time)
 {
-	printf("Время работы в milli секундах:\n");
-	printf("%lu\n",time); 
+	printf("Время работы в milli секундах: %lu\n",time); 
 }
 
 
 void TcpServerModel::printNumberOfPockets(long count ,long number)
 {
 	printf("Пакетов %d из %d получено\n",count,number);
-	printf("Не дошло: %d\n", (number - count));
-	long proc = (number - count);
-	printf("Процент потерь: %d %\n",proc/number);
+	//printf("Не дошло: %d\n", (number - count));
+	//long proc = (number - count);
+	//printf("Процент потерь: %d %\n",proc/number);
 }
 
 /*
@@ -133,7 +127,6 @@ void TcpServerModel::readingTcp(int lis,int &s, struct msg structure_to_write)
 	struct timespec time1;
 	struct timespec time2;
 	long hope;
-//while(true) {                       //cyckle of listening  and accepting
 	long int count_of_pockets;
 	count_of_pockets = 0;
 	long int number_of_pockets;
@@ -144,11 +137,11 @@ void TcpServerModel::readingTcp(int lis,int &s, struct msg structure_to_write)
 
 	clock_gettime(CLOCK_REALTIME, &time1);
 
-	for(int i=0; i<number_of_pockets; i++) { //cyckle of reading of datapockets
+	for(int i = 0; i < number_of_pockets; i++) { //cyckle of reading of datapockets
 	   bytes_read = recv(s,(void *)&structure_to_write, sizeof(structure_to_write), 0);
 				
 		if (bytes_read <= 0) {	
-			printf("End of Reading!\n");
+			printf("TCP_server: error end of data stream!\n");
 		} else {
 			count_of_pockets = count_of_pockets+1;
 		}
@@ -158,10 +151,7 @@ void TcpServerModel::readingTcp(int lis,int &s, struct msg structure_to_write)
 	
 	printStatistic(hope, number_of_pockets, count_of_pockets);
 	
-	count_of_pockets = 0;
 	close(s);
-//	exit(0);
-//} 
 }
 
 
@@ -177,12 +167,13 @@ void TcpServerModel::run() {
     	int bytes_read;
 	struct msg buf;
 
-	TcpServerModel::createTcpSocket(listener, addr);
+	createTcpSocket(listener, addr);
     listen(listener, 1);//Listening of port
 
-    printf("Listening...\n");
+    //printf("Listening...\n");
+	printf("[TCP_server]: wait for client...\n");
 
-	TcpServerModel::readingTcp(listener,sock,buf);   
+	readingTcp(listener,sock,buf);   
 }
 
 
@@ -192,5 +183,5 @@ void TcpServerModel::run() {
 */
 void TcpServerModel::configure(struct model_configuration_struct *config_struct) {
 	port = config_struct->port;
-	printf("TCP_server: configuration: port %d\n", port);
+	printf("[TCP_server]: configuration: port %d\n", port);
 }
