@@ -16,7 +16,6 @@ int main (int argc, char **argv) {
 //Controller test
 	Model *model;
 	ConcreteController *controller = new ConcreteController();
-	//ViewController* view_controller = new ViewController();
 
 	controller->run(argc, argv);
 	model = controller->getModel();
@@ -35,8 +34,8 @@ int main (int argc, char **argv) {
 
 
 //	Molient/Server
-/*	Model *model = new UdpServerModel(); 
+	/*Model *model = new UdpServerModel(); 
 	model->run();*/
 	printf("[Finalization]\n"); 
-	return 0;
+return 0;
 }

@@ -17,7 +17,7 @@ udp_client_model: udp_client_model.cpp
 	$(CC) -c udp_client_model.cpp
 
 tcp_server_model: tcp_server_model.cpp
-	$(CC) -c tcp_server_model.cpp
+	$(CC) -c tcp_server_model.cpp -lrt
 
 udp_server_model: udp_server_model.cpp
 	$(CC) -c udp_server_model.cpp
@@ -34,3 +34,4 @@ clean:
 	rm -f *.o
 	rm iperf_clone
 	rm -f *.h.gch
+
