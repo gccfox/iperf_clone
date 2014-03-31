@@ -6,8 +6,9 @@
   *		Just a constructor 
   */
 UdpClientModel::UdpClientModel() {
-	printf("Udp client created!\n");
-	packet_count = DEFAULT_PACKET_COUNT;
+	//printf("Udp client created!\n");
+	packets_count = DEFAULT_PACKETS_COUNT;
+	packet_size = DEFAULT_PACKET_SIZE;
 	port = DEFAULT_PORT;
 	system_port = DEFAULT_SYSTEM_PORT;
 	host_ip_address = new char[50];
@@ -22,7 +23,7 @@ UdpClientModel::UdpClientModel() {
 void UdpClientModel::run() {
 
 	//---TCP
-	printf("UDP_client: system daemon ready\n");
+	//printf("UDP_client: system daemon ready\n");
 	initSystemDataSocket();
 	initSystemSocketConnection(); 
 	safeSendInitPacket();
@@ -49,10 +50,14 @@ void UdpClientModel::configure(struct model_configuration_struct *configuration_
 		printf("UDP_Client: model config error!\n");
 		exit(1);
 	}
-	printf("UDP_client: configuration!\n"); 
+	//printf("UDP_client: configuration!\n"); 
 	port = configuration_struct->port;
 	system_port = configuration_struct->system_port; 
 	host_ip_address = configuration_struct->ip;
+	packets_count = configuration_struct->packets_count;
+	printf("UDP_client: configuration:\n ip %s\n port %d\n system port %d\n packets count %d\n packet size %d bytes\n\n",
+		   	host_ip_address, port, system_port, packets_count, packet_size);
+
 }
 
 
@@ -122,7 +127,7 @@ void UdpClientModel::startDataClient() {
   */
 void UdpClientModel::sendInitPacket() {
 	struct connection_init_data *init_packet = formInitPacket();
-	printf("UDP_client: sending init packet!\n");
+	//printf("UDP_client: sending init packet!\n");
 
 	//---Send packet
 	if (sendto(data_socket, (void *)init_packet, sizeof(struct connection_init_data), 0,
@@ -140,7 +145,7 @@ void UdpClientModel::sendInitPacket() {
   */
 struct connection_init_data* UdpClientModel::formInitPacket() {
 	struct connection_init_data *result = new connection_init_data;
-	result->packet_count = packet_count;
+	result->packets_count = packets_count;
 	memset(result->client_name, 0, sizeof(char) * CLIENT_NAME_SIZE);
 	strcpy(result->client_name, DEFAULT_UDP_CLIENT_NAME); 
 	return result;
@@ -152,12 +157,13 @@ struct connection_init_data* UdpClientModel::formInitPacket() {
   *
   */
 void UdpClientModel::sendDataStream() {
-	printf("UDP_client: start data stream\n");
-	for (int i = 0; i < packet_count; i++) {
+	printf("[UDP_client] start sending data stream\n");
+	for (int i = 0; i < packets_count; i++) {
 		sendDataPacket(i);
 		//printf("UDP_client: packet [%d] sent..\n", i);
 	}
-	printf("UDP_client: end data stream\n");
+	//printf("UDP_client: end sending data stream\n");
+	printf("[UDP_client] send %d packets\n", packets_count);
 }
 
 
@@ -273,7 +279,7 @@ void UdpClientModel::safeSendTerminationPacket() {
 		printf("UDP_client: send system term data fault!%d\n", errno);
 		exit(2);
 	}	
-	printf("UDP_client: sent term packet!\n");
+	printf("[UDP_client] sent term packet!\n");
 }
 
 

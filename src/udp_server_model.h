@@ -28,8 +28,10 @@ class UdpServerModel : public Model {
 
 	int							end_udp_data_flag;
 
+	//---Inner options
 	int							port;
 	int							system_port;
+	bool						loss_measurement_flag;
 
     //---data receiver thread 
     pthread_t                   flood_data_thread;

@@ -37,7 +37,6 @@ int main (int argc, char **argv) {
 //	Molient/Server
 /*	Model *model = new UdpServerModel(); 
 	model->run();*/
-
-	printf("Iperf ready\n");
+	printf("[Finalization]\n"); 
 	return 0;
 }

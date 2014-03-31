@@ -18,6 +18,8 @@
 #define DEFAULT_IP				"127.0.0.1"
 #define CLIENT_NAME_SIZE		128
 #define UDP_FLOOD_DATA_SIZE		256
+#define DEFAULT_PACKETS_COUNT	100000
+#define DEFAULT_PACKET_SIZE		256
 
 
 
@@ -29,7 +31,9 @@ struct model_configuration_struct{
 	int work_mode;
 	int protocol;
 	char* ip;
-	int packets_count;
+	unsigned long packets_count;
+	unsigned packet_size;
+	bool loss_measurement;
 };
 
 

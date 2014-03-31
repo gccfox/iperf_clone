@@ -5,7 +5,7 @@
 //#define UDP_PACKET_SEND_DELAY_MS		1
 //---Contains main connection info
 struct connection_init_data {
-	int 	packet_count;
+	int 	packets_count;
 	char	client_name[CLIENT_NAME_SIZE];
 };
 

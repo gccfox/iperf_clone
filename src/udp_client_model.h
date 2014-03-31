@@ -13,10 +13,12 @@ class UdpClientModel : public Model {
 	int 						system_data_socket;
 	struct sockaddr_in			data_socket_config;
 	struct sockaddr_in			system_data_socket_config;
-	int 						packet_count;
 
+	//---Configuration
 	int 						port;
 	int							system_port;
+	int 						packet_size;
+	int 						packets_count;
 	char 						*host_ip_address;
 
 	public:

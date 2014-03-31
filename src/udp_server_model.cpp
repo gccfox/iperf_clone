@@ -21,7 +21,7 @@ void killingUdpThreadHandler(int) {
   *		Just a constructor 
   */
 UdpServerModel::UdpServerModel() {
-	printf("Udp Server created!\n");
+	//printf("UDP_server: ready. Wait for connection!\n");
     packets_expected = 0;
     packets_received = 0;
     receive_time_sec = 0;
@@ -79,9 +79,12 @@ void UdpServerModel::configure(struct model_configuration_struct *configuration_
 		printf("UDP_server: model config error!\n");
 		exit(1);
 	}
-	printf("UDP_server: configuration!\n"); 
+	//printf("UDP_server: configuration!\n"); 
 	port = configuration_struct->port; 
 	system_port = configuration_struct->system_port;
+	loss_measurement_flag = configuration_struct->loss_measurement;
+	printf("UDP_server: ready. Configured with port: %d, system port: %d\n", port, system_port);
+	printf("Wait for connection..\n");
 }
 
 
@@ -181,7 +184,7 @@ void UdpServerModel::bindSocket(int socket, struct sockaddr_in *socket_config) {
   *		Starts listening in another thread for system messages
   */
 void UdpServerModel::prepareControlDataSocket() {
-	printf("System data server on air..\n");
+	//printf("System data server on air..\n");
 	initControlDataSocket();
 	listen(control_data_socket, SYSTEM_SERVER_BACKLOG_SIZE);
 }
@@ -200,7 +203,7 @@ void *UdpServerModel::startDataReceiving(void *obj) {
     //---Configure timeout killing timer
     this_object->configureTimer();
 
-	printf("UDP_server: udp serving in thread started..\n"); 
+	//printf("UDP_server: udp serving in thread started..\n"); 
 	this_object->receiveDataStream(); 
 
     return NULL;
@@ -239,10 +242,10 @@ void UdpServerModel::receiveInitPacket() {
 		exit(3);
 	}
 
-	printf("Udp_server:: *unsafe* get init packet packet count: %d client name: %s\n", init_data_packet.packet_count, init_data_packet.client_name);
+	printf("Udp_server:: *unsafe* get init packet packet count: %d client name: %s\n", init_data_packet.packets_count, init_data_packet.client_name);
 
 	//---Save expected count of stream
-	packets_expected = init_data_packet.packet_count;
+	packets_expected = init_data_packet.packets_count;
 }
 
 
@@ -263,13 +266,8 @@ void UdpServerModel::receiveDataStream() {
 			pthread_exit(NULL);
 		}
 
-        //---Checks fulfilling of socket
-        //select(1, &udp_socket_set, NULL, NULL, &udp_socket_sleep_interval);
-        /*if (FD_ISSET(receive_socket, &udp_socket_set)) {
-    		receiveDataPacket();
-        }*/
 		if (packets_received == packets_expected) {
-			printf("UDP_server: finalize data processing due to: received all expected packets\n");
+			//printf("UDP_server: finalize data processing due to: received all expected packets\n");
 			pthread_exit(NULL);
 		}
 	}
@@ -331,10 +329,10 @@ void UdpServerModel::safeReceiveInitPacket() {
 	}
 
 	//---Save expected count of stream
-	packets_expected = init_data_packet.packet_count;
+	packets_expected = init_data_packet.packets_count;
 	
 	printf("Udp_server: get init packet packet count: %d client name: %s\n", packets_expected, init_data_packet.client_name); 
-	printf("UDP_server: started..\n"); 
+	//printf("UDP_server: started..\n"); 
 }
 
 
@@ -345,7 +343,7 @@ void UdpServerModel::safeReceiveInitPacket() {
 void UdpServerModel::safeReceiveTerminationPacket() {
 	struct connection_terminate_data	terminate_packet;
 
-	printf("UDP_server: waiting for term packet\n");
+	//printf("UDP_server: waiting for term packet\n");
 
 	//---Receive terminate packet
 	if (recv(receive_socket, (void *)&terminate_packet, sizeof(struct connection_terminate_data), 0) < 0) {
@@ -353,7 +351,7 @@ void UdpServerModel::safeReceiveTerminationPacket() {
 		exit(2);
 	}
 	
-	printf("Udp_server: get termination packet with code %d\n", terminate_packet.termination_code);
+	//printf("Udp_server: get termination packet with code %d\n", terminate_packet.termination_code);
 }
 
 
@@ -371,9 +369,13 @@ void UdpServerModel::printStatistic() {
 
 	average_speed = packets_received * sizeof(udp_data_packet) / receive_time_sec;
 
+	printf("--------[Statistics]-------\n");
+
 	printf("Data processing time: %.3f\n", receive_time_sec);
-    printf("Packets expected: %d, receive: %d\n", packets_expected, packets_received);
-	printf("Percentage of loss packets: %.3f\n", loss_percentage);
+	if (loss_measurement_flag) {
+		printf("Packets expected: %d, receive: %d\n", packets_expected, packets_received);
+		printf("Percentage of loss packets: %.3f\n", loss_percentage);
+	}
 	printHumanReadableAverageSpeed();
 }
     
@@ -396,7 +398,7 @@ void UdpServerModel::freeResources() {
 void UdpServerModel::configureTimer() {
     struct sigaction        sa;
     struct itimerval        timer;
-	printf("UDP_server: settin timer!\n");
+	//printf("UDP_server: settin timer!\n");
 
     //---Set signal handler
     memset(&sa, 0, sizeof(struct sigaction));
@@ -426,7 +428,7 @@ void UdpServerModel::configureTimer() {
 int UdpServerModel::getCurrentTime(struct timespec *time_struct) {
 	memset(time_struct, 0, sizeof(struct timespec));
 
-	if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, time_struct)) {
+	if (clock_gettime(CLOCK_REALTIME, time_struct)) {
 		perror("UDP_server: error getting thread time!");
 		return false;
 	}

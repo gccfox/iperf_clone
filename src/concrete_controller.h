@@ -22,12 +22,25 @@
 	configure and run models
 */
 class ConcreteController : public Controller { 
-	Model *model;
+
+		Model *model;
+
+		bool set_port_flag;
+		bool set_system_port_flag;
+		bool set_ip_flag;
+		bool set_packets_count_flag;
+		bool set_protocol_flag;
+		bool set_working_mode_flag;
+		bool set_loss_measurement_flag;
+		bool set_packet_size_flag;
 
 	public:
 		ConcreteController();
 		~ConcreteController();
 		void run(int argc, char **argv);
+		Model *getModel();
+
+	private:
 		Model *chooseModelType(struct model_configuration_struct *mod);
 		bool checkTcpServer(struct model_configuration_struct *mo);
 		bool checkTcpClient(struct model_configuration_struct *mo);
@@ -37,5 +50,5 @@ class ConcreteController : public Controller {
 		void printHelpPage();
 		void initModelStructure(struct model_configuration_struct *mo);
 		void checkFlagSet(bool &flag);
-		Model *getModel();
+		bool checkConfigStructure(struct model_configuration_struct *ma);
 };
