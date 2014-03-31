@@ -1,8 +1,4 @@
-/*
-*	Just a constructor 
-*/
 #define CLIENT_PORT 3409
-#define N 100000
 #include "tcp_client_model.h"
 #include <netinet/in.h>
 struct sending
@@ -15,13 +11,14 @@ struct sending
 
 
 TcpClientModel::TcpClientModel() {
-	printf("Tcp client created!\n");
+	//printf("Tcp client created!\n");
 }
 
 
+/**
+ *    Some shit
+ */
 void TcpClientModel::defaultConfigure(){
-//    TcpClientModel.conf.ip = "192.168.1.4";
-    //TcpClientModel.conf.numberOfPackages = 16;    
 }
 
 /*
@@ -30,55 +27,79 @@ void TcpClientModel::defaultConfigure(){
 */
 int TcpClientModel::createConnection(int &sock) //conection creat function
 {
+  //printf("Create Connection \n");
   struct sockaddr_in addr;
+  //printf("struct created \n");
   int flag = 0;
-  if((sock = socket(AF_INET, SOCK_STREAM, 0))<0)
-    flag = 1;
+  if((sock = socket(AF_INET, SOCK_STREAM, 0))<0) {
+	  perror("TCP_client: socket creation error!\n");
+	  exit(0);
+  }
+  //printf("Socket created \n");
   addr.sin_family = AF_INET;
   addr.sin_port = htons(CLIENT_PORT);
-  if(inet_aton(DEFAULT_IP, &addr.sin_addr) == 0)
-    flag = 1;
-  if(connect(sock,(struct sockaddr *)&addr,sizeof(addr))<0)
-    flag = 1;
+
+//  printf("port and family fill\n");
+  if(inet_aton(DEFAULT_IP, &addr.sin_addr) == 0) {
+	  perror("TCP_client: error invalid ip");
+  }
+//  printf("IP address converted\n");
+  if(connect(sock,(struct sockaddr *)&addr,sizeof(addr))<0) {
+	  perror("TCP_client: connection problems\n");
+  }
+//  printf("Connection done\n");
   return flag;
 }
+
+
+
 int TcpClientModel::sendInformation(int sockfd)
 {
+	printf("[TCP_client]: sending data\n");
     int count = 0;
-    int nn = N;
+    int nn = packets_count;
   //  me.all = N;
-    if(send(sockfd,(void *)& nn, sizeof(int), 0)==0){
-      printf("Error with sending initializes package\n");
+    if(send(sockfd,(void *)&nn, sizeof(int), 0)==-1){
+      printf("TCP_client: Error with sending initializes package\n");
       exit(1);
     }
-    for(int i = 0; i <= N; i++)
+    for(int i = 0; i < packets_count; i++)
     {
-        me.that = i;
+        me.that = htons(i);
         me.self = 'S';
-        me.size = sizeof(me.self);
-        if(send(sockfd, (void *)&me, sizeof(me),0) == -1)
-            printf("Send error with package number %d\n", i);
-        else
+        me.size = sizeof(me);
+        if(send(sockfd, (void *)&me, sizeof(struct sending),0) == -1)
+            printf("TCP_client: send error with package number %d\n", i);
+        else {
             count++;
+//            printf("Send data packet with id %i %i\n", me.that, i);
+        }
+        //usleep(1);
     }
     return count;
 }
+
+
+
 void  TcpClientModel::printStatistic(int sent)
 {
-  printf("Try to send packages  - %d\n", N);
-  printf("Sent without any problems - %d\n", sent);
+  printf("[TCP_client]: sendings packages  - %d\n", packets_count);
+  printf("[TCP_client]: sent without any problems packages- %d\n", sent);
 }
+
+
+
 void TcpClientModel::run() {
-    TcpClientModel::defaultConfigure();
+    defaultConfigure();
     int i;
     int count = 0;
     int sockfd;
-    if(TcpClientModel::createConnection(sockfd))
+    if(createConnection(sockfd))
     {
-      printf("Create connection errror!\n");
+      printf("TCP_client: Create connection errror!\n");
       exit(1);
     }
-    TcpClientModel::printStatistic(TcpClientModel::sendInformation(sockfd));
+    printStatistic(sendInformation(sockfd));
     close(sockfd);
 }
 
@@ -87,5 +108,8 @@ void TcpClientModel::run() {
 *	This function provides pre configuration
 *	Do not touch now
 */
-void TcpClientModel::configure(struct model_configuration_struct *) {
+void TcpClientModel::configure(struct model_configuration_struct *conf_struct) {
+	port = conf_struct->port;
+	host_ip_address = conf_struct->ip;
+	packets_count = conf_struct->packets_count;
 }

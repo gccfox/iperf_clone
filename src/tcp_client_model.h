@@ -10,6 +10,9 @@
 *	mode
 */
 class TcpClientModel : public Model {
+	int port;
+	int packets_count;
+	char* host_ip_address;
 
    	private:
         int createConnection(int &sock);
