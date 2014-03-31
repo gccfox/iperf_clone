@@ -10,9 +10,14 @@
 *	mode
 */
 class TcpClientModel : public Model {
-	public:
-		struct timespec		start_receive_data_time, end_receive_data_time;
+   private:
+        configure_struct conf;
+        int createConnection(int &sock);
+        int sendInformation(int sockfd);
+        void printStatistic(int sent);
+    public:
 		TcpClientModel();
-		void run();
-		void configure(struct configure_struct *);
+                void defaultConfigure();
+		virtual void run();
+		virtual void configure(struct configure_struct *);
 };
