@@ -1,7 +1,8 @@
 #ifndef MODEL_H
 	#include "model.h"
 #endif
-
+#include <time.h>
+#include <sys/time.h>
 /*
 *	This model characterize tcp client
 *	mode

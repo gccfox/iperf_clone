@@ -1,4 +1,4 @@
-#define CLIENT_PORT 3409
+#define CLIENT_PORT 3444
 #define N 100000
 #include "tcp_client_model.h"
 #include <netinet/in.h>
@@ -16,8 +16,11 @@ TcpClientModel::TcpClientModel() {
 }
 
 
+/**
+ *    Some shit
+ */
 void TcpClientModel::defaultConfigure(){
-    this->conf.ip = "192.168.1.4";
+    this->conf.ip = "192.168.0.7";
     //TcpClientModel.conf.numberOfPackages = 16;    
 }
 
@@ -42,9 +45,12 @@ int TcpClientModel::createConnection(int &sock) //conection creat function
   //printf("IP address converted\n");
   if(connect(sock,(struct sockaddr *)&addr,sizeof(addr))<0)
     flag = 1;
-  printf("Connection done");
+//  printf("Connection done\n");
   return flag;
 }
+
+
+
 int TcpClientModel::sendInformation(int sockfd)
 {
 //    printf("Send Information\n");
@@ -57,21 +63,30 @@ int TcpClientModel::sendInformation(int sockfd)
     }
     for(int i = 0; i <= N; i++)
     {
-        me.that = i;
+        me.that = htons(i);
         me.self = 'S';
-        me.size = sizeof(me.self);
-        if(send(sockfd, (void *)&me, sizeof(me),0) == -1)
+        me.size = sizeof(me);
+        if(send(sockfd, (void *)&me, sizeof(struct sending),0) == -1)
             printf("Send error with package number %d\n", i);
-        else
+        else {
             count++;
+//            printf("Send data packet with id %i %i\n", me.that, i);
+        }
+        usleep(1);
     }
     return count;
 }
+
+
+
 void  TcpClientModel::printStatistic(int sent)
 {
   printf("Try to send packages  - %d\n", N);
   printf("Sent without any problems - %d\n", sent);
 }
+
+
+
 void TcpClientModel::run() {
     defaultConfigure();
     int i;
@@ -82,7 +97,7 @@ void TcpClientModel::run() {
       printf("Create connection errror!\n");
       exit(1);
     }
-    printStatistic(TcpClientModel::sendInformation(sockfd));
+    printStatistic(sendInformation(sockfd));
     close(sockfd);
 }
 

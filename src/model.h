@@ -16,6 +16,7 @@
 #include <netdb.h>
 //---Abstract interface for all models
 class Model {
+  public: 
 	virtual void run() {};
 	virtual void configure(struct configure_struct *) {};
 };
