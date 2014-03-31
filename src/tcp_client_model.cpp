@@ -36,7 +36,7 @@ int TcpClientModel::createConnection(int &sock) //conection creat function
     flag = 1;
   addr.sin_family = AF_INET;
   addr.sin_port = htons(CLIENT_PORT);
-  if(inet_aton(conf.ip, &addr.sin_addr) == 0)
+  if(inet_aton(DEFAULT_IP, &addr.sin_addr) == 0)
     flag = 1;
   if(connect(sock,(struct sockaddr *)&addr,sizeof(addr))<0)
     flag = 1;
@@ -87,5 +87,5 @@ void TcpClientModel::run() {
 *	This function provides pre configuration
 *	Do not touch now
 */
-void TcpClientModel::configure(struct configure_struct *) {
+void TcpClientModel::configure(struct model_configuration_struct *) {
 }

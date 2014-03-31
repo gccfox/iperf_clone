@@ -10,14 +10,15 @@
 *	mode
 */
 class TcpClientModel : public Model {
-   private:
-        configure_struct conf;
+
+   	private:
         int createConnection(int &sock);
         int sendInformation(int sockfd);
         void printStatistic(int sent);
+
     public:
 		TcpClientModel();
-                void defaultConfigure();
-		virtual void run();
-		virtual void configure(struct configure_struct *);
+        void defaultConfigure();
+		void run();
+		void configure(struct model_configuration_struct *);
 };
