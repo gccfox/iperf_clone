@@ -24,10 +24,11 @@
 *	mode
 */
 class TcpServerModel : public Model {
+		int port;
 	public:
 		TcpServerModel();
 		virtual void run();
-		void configure(struct configure_struct *);
+		void configure(struct model_configuration_struct *);
 		void createTcpSocket(int &lis, struct sockaddr_in add); 
 		void readingTcp(int lis,int &s, struct msg b);
 		void receiveInitData(long int &number_of_pockets,int &s, struct msg b);

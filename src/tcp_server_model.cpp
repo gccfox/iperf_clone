@@ -27,7 +27,7 @@ void TcpServerModel::createTcpSocket(int &lis,struct sockaddr_in add) {
     }
     	
 	add.sin_family = AF_INET; //filling the structure
-	add.sin_port = htons(DEFAULT_PORT);
+	add.sin_port = htons(port);
 	add.sin_addr.s_addr = htonl(INADDR_ANY);
     	
 	if ( bind (lis , (struct sockaddr *) & add , sizeof (add) ) < 0){
@@ -190,6 +190,7 @@ void TcpServerModel::run() {
 *	This function provides pre configuration
 *	Do not touch now
 */
-void TcpServerModel::configure(struct configure_struct *) {
-
+void TcpServerModel::configure(struct model_configuration_struct *config_struct) {
+	port = config_struct->port;
+	printf("TCP_server: configuration: port %d\n", port);
 }
