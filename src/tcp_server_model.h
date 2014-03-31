@@ -32,9 +32,9 @@ class TcpServerModel : public Model {
 		void readingTcp(int lis,int &s, struct msg b);
 		void receiveInitData(long int &number_of_pockets,int &s, struct msg b);
 		void acceptClient(int lis, int &s);
-		void printSpeed(unsigned long int time, long int number_of_pockets);
-		void printTimeInSec(unsigned long int time);
-		void printNumberOfPockets(unsigned long int count ,unsigned long int number);
-		void printStatistic(long unsigned int, long int, long unsigned int);
+		void printSpeed(long time, long int number_of_pockets);
+		void printTimeInSec(long time);
+		void printNumberOfPockets(long count ,long number);
+		void printStatistic(long, long, long);
 
 };
