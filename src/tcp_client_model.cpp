@@ -40,7 +40,7 @@ int TcpClientModel::createConnection(int &sock) //conection creat function
   addr.sin_port = htons(port);
 
 //  printf("port and family fill\n");
-  if(inet_aton(host_ip_addr, &addr.sin_addr) == 0) {
+  if(inet_aton(host_ip_address, &addr.sin_addr) == 0) {
 	  perror("TCP_client: error invalid ip");
   }
 //  printf("IP address converted\n");
