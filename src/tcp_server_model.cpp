@@ -80,7 +80,7 @@ void TcpServerModel::receiveInitData(long int &number_of_pockets, int s){
 
 void TcpServerModel::printSpeed(long time, long number_of_pockets)
 {
-	double kb_speed = (number_of_pockets * sizeof(struct tcp_data_packet)) * 1000 / 1024 / time;
+	double kb_speed = (number_of_pockets * sizeof(struct tcp_data_packet)) * 1000000 / 1024 / time;
 	if (kb_speed < 1000) {
 		printf("Скорость - %.4f Kbytes/s\n",kb_speed);
 	} else {
@@ -91,7 +91,7 @@ void TcpServerModel::printSpeed(long time, long number_of_pockets)
 
 void TcpServerModel::printTimeInSec(long time)
 {
-	printf("Время работы в milli секундах: %lu\n",time); 
+	printf("Время работы в секундах: %.6f\n", time / 1000000.0); 
 }
 
 
@@ -143,11 +143,11 @@ void TcpServerModel::readingTcp(int lis,int &s, struct tcp_data_packet structure
 		if (bytes_read <= 0) {	
 			printf("TCP_server: error end of data stream!\n");
 		} else {
-			count_of_pockets = count_of_pockets+1;
+			count_of_pockets++;
 		}
 	}
 	clock_gettime(CLOCK_REALTIME, &time2);
-	hope =  (time2.tv_sec * 1000 + time2.tv_nsec / 1000000) - (time1.tv_sec * 1000 + time1.tv_nsec / 1000000);
+	hope =  (time2.tv_sec * 1000000 + time2.tv_nsec / 1000) - (time1.tv_sec * 1000000 + time1.tv_nsec / 1000);
 	
 	printStatistic(hope, number_of_pockets, count_of_pockets);
 	

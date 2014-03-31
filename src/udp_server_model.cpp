@@ -48,9 +48,6 @@ void UdpServerModel::run() {
 	safeReceiveInitPacket(); 
 
 
-	//---Snap start time
-	getCurrentTime(&start_receive_data_time);
-
     //---Start stread for udp data
     startDataReceivingThread();
 
@@ -61,7 +58,7 @@ void UdpServerModel::run() {
     //pthread_cancel(flood_data_thread);
     pthread_join(flood_data_thread, (void **)udp_thread_result);
 
-	//---Snap end time
+	//---Snap start time
 	getCurrentTime(&end_receive_data_time);
 
     printStatistic();
@@ -223,6 +220,8 @@ void UdpServerModel::startDataReceivingThread() {
             printf("UDP_server: flood receiving thread: creation error!%d\n", errno);
             exit(1);
     }
+	//---Snap start time
+	getCurrentTime(&start_receive_data_time);
     
 }
 
@@ -257,6 +256,7 @@ void UdpServerModel::receiveInitPacket() {
 void UdpServerModel::receiveDataStream() {
 	printf("UDP_server: start receiving data stream, expected %d packets\n", packets_expected); 
 
+
 	while(true) { 
 		//---if end-of-data-stream packet did't come yet
 		if (!end_udp_data_flag) {
@@ -272,6 +272,7 @@ void UdpServerModel::receiveDataStream() {
 		}
 	}
 	printf("UDP_server: end of data stream\n");
+
 }
 
 
@@ -290,14 +291,14 @@ void UdpServerModel::receiveRemainingData() {
 /**
   *		Receive udp data packet
   */
-int UdpServerModel::receiveDataPacket() {
+inline int UdpServerModel::receiveDataPacket() {
 	struct udp_data_packet		packet;	
 	struct sockaddr_in			packet_info;
 	socklen_t					packet_info_length = sizeof(struct sockaddr_in);
     int                         recv_result = 0;
 
     recv_result = recvfrom(flood_data_socket, (void *)&packet, sizeof(struct udp_data_packet),
-			MSG_WAITALL, (struct sockaddr *)&packet_info, &packet_info_length);
+			MSG_DONTWAIT, (struct sockaddr *)&packet_info, &packet_info_length);
 
 	if (recv_result < 0) {
 		//perror("UDP_server: message receive error! Error code ");
@@ -367,7 +368,7 @@ void UdpServerModel::printStatistic() {
 	//printf("In MS receive time is %d %lli\n", receive_time_ms, receive_time_ms);
 	receive_time_sec = receive_time_ms / 1000.0;
 
-	average_speed = packets_received * sizeof(udp_data_packet) / receive_time_sec;
+	average_speed = packets_received * sizeof(struct udp_data_packet) / receive_time_sec;
 
 	printf("--------[Statistics]-------\n");
 
@@ -461,8 +462,8 @@ void UdpServerModel::printHumanReadableAverageSpeed() {
     mb_speed = kb_speed / 1024.0;
 
 	if (kb_speed < 1024) {
-		printf("UDP_server: average speed :%.3FKb\n", kb_speed);
+		printf("UDP_server: average speed :%.3FKbytes\n", kb_speed);
 	} else {
-		printf("UDP_server: average speed :%.3FMb\n", mb_speed);
+		printf("UDP_server: average speed :%.3FMbytes\n", mb_speed);
 	}
 }

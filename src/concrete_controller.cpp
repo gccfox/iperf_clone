@@ -140,7 +140,7 @@ void ConcreteController::printHelpPage() {
 
 	printf("Client specific:\n");
 	printf("  -i,  --ip  <host>          Determine IP of server.\n");
-	printf("  -c,  --packets-count  #    Determine packets count, less than 1kk\n");
+	printf("  -c,  --packets-count  #    Determine packets count, less than 10^7\n");
 	printf("  -b,  --packet-size  #      Determine packet size, in bytes, less than 1Kb\n");
 	printf("  -l,  --loss-measurement #  Enables loss measurement. UDP specific\n\n");
 
@@ -248,8 +248,8 @@ void ConcreteController::parsingArguments(int argc, char **argv, model_configura
 					printf("Error: packets count expected int!\n");
 					printHelpPage();
 					exit(1);
-				} else if ((mo->packets_count <= 0)|| (mo->packets_count > 1000000)) {
-					printf("Error: packets count expected non-zero, positive, and less than 1kk\n");
+				} else if ((mo->packets_count <= 0)|| (mo->packets_count > 10000000)) {
+					printf("Error: packets count expected non-zero, positive, and less than 10kk\n");
 					printHelpPage();
 					exit(1);
 				}
