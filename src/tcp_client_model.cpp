@@ -20,7 +20,7 @@ TcpClientModel::TcpClientModel() {
  *    Some shit
  */
 void TcpClientModel::defaultConfigure(){
-    this->conf.ip = "192.168.0.7";
+    this->conf.ip = "127.0.0.1";
     //TcpClientModel.conf.numberOfPackages = 16;    
 }
 
@@ -42,7 +42,7 @@ int TcpClientModel::createConnection(int &sock) //conection creat function
 //  printf("port and family fill\n");
   if(inet_aton(this->conf.ip, &addr.sin_addr) == 0)
     flag = 1;
-  //printf("IP address converted\n");
+//  printf("IP address converted\n");
   if(connect(sock,(struct sockaddr *)&addr,sizeof(addr))<0)
     flag = 1;
 //  printf("Connection done\n");
@@ -53,7 +53,7 @@ int TcpClientModel::createConnection(int &sock) //conection creat function
 
 int TcpClientModel::sendInformation(int sockfd)
 {
-//    printf("Send Information\n");
+    printf("Send Information\n");
     int count = 0;
     int nn = N;
   //  me.all = N;
@@ -72,7 +72,7 @@ int TcpClientModel::sendInformation(int sockfd)
             count++;
 //            printf("Send data packet with id %i %i\n", me.that, i);
         }
-        usleep(1);
+        //usleep(1);
     }
     return count;
 }
