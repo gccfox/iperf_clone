@@ -4,6 +4,7 @@
 #include <pthread.h>
 #include <signal.h>
 #include <sys/time.h>
+#include "tcp_data_types.h"
 
 /*
 *	This model characterize tcp client

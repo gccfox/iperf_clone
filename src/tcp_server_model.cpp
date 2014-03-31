@@ -1,10 +1,10 @@
 #include "tcp_server_model.h"
 //structure with data
-struct msg{
+/*struct msg{
 	int that;//count of current datapocket
 	char self;//data
 	int size;//size of datapocket
-};
+};*/
 
 /*
 *	Just a constructor 
@@ -62,9 +62,9 @@ void TcpServerModel::acceptClient(int lis,int &s)
 *	Place your code here
 */
 
-void TcpServerModel::receiveInitData(long int &number_of_pockets,int &s, struct msg b){
+void TcpServerModel::receiveInitData(long int &number_of_pockets, int s){
 	int bytes_read;
-	bytes_read = recv(s,(void *)&number_of_pockets, sizeof(int), 0);
+	bytes_read = recv(s, (void *)&number_of_pockets, sizeof(int), 0);
 	if (bytes_read <= 0){
 		printf("TCP_server: error in reading initial data\n");
     } else {
@@ -80,7 +80,7 @@ void TcpServerModel::receiveInitData(long int &number_of_pockets,int &s, struct 
 
 void TcpServerModel::printSpeed(long time, long number_of_pockets)
 {
-	double kb_speed = (number_of_pockets * sizeof(struct msg)) * 1000 / 1024 / time;
+	double kb_speed = (number_of_pockets * sizeof(struct tcp_data_packet)) * 1000 / 1024 / time;
 	if (kb_speed < 1000) {
 		printf("Скорость - %.4f Kbytes/s\n",kb_speed);
 	} else {
@@ -120,7 +120,7 @@ void TcpServerModel::printStatistic(long time, long int number_of_pockets,long c
 *	Place your code here
 */
 
-void TcpServerModel::readingTcp(int lis,int &s, struct msg structure_to_write)
+void TcpServerModel::readingTcp(int lis,int &s, struct tcp_data_packet structure_to_write)
 {
 
 	int bytes_read;
@@ -133,7 +133,7 @@ void TcpServerModel::readingTcp(int lis,int &s, struct msg structure_to_write)
 	number_of_pockets = 0;
 	
 	acceptClient(lis, s);
-	receiveInitData(number_of_pockets, s, structure_to_write); 
+	receiveInitData(number_of_pockets, s); 
 
 	clock_gettime(CLOCK_REALTIME, &time1);
 
@@ -165,7 +165,7 @@ void TcpServerModel::run() {
 	int sock, listener;
     	struct sockaddr_in addr;
     	int bytes_read;
-	struct msg buf;
+	struct tcp_data_packet buf;
 
 	createTcpSocket(listener, addr);
     listen(listener, 1);//Listening of port

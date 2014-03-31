@@ -1,13 +1,13 @@
 #define CLIENT_PORT 3409
 #include "tcp_client_model.h"
 #include <netinet/in.h>
-struct sending
+/*struct sending
 {
 //    int all;
     int that;
     int size;
     char self;
-}me;
+}me;*/
 
 
 TcpClientModel::TcpClientModel() {
@@ -37,10 +37,10 @@ int TcpClientModel::createConnection(int &sock) //conection creat function
   }
   //printf("Socket created \n");
   addr.sin_family = AF_INET;
-  addr.sin_port = htons(CLIENT_PORT);
+  addr.sin_port = htons(port);
 
 //  printf("port and family fill\n");
-  if(inet_aton(DEFAULT_IP, &addr.sin_addr) == 0) {
+  if(inet_aton(host_ip_addr, &addr.sin_addr) == 0) {
 	  perror("TCP_client: error invalid ip");
   }
 //  printf("IP address converted\n");
@@ -55,6 +55,7 @@ int TcpClientModel::createConnection(int &sock) //conection creat function
 
 int TcpClientModel::sendInformation(int sockfd)
 {
+	struct tcp_data_packet 	data_packet;
 	printf("[TCP_client]: sending data\n");
     int count = 0;
     int nn = packets_count;
@@ -65,10 +66,11 @@ int TcpClientModel::sendInformation(int sockfd)
     }
     for(int i = 0; i < packets_count; i++)
     {
-        me.that = htons(i);
+        /*me.that = htons(i);
         me.self = 'S';
-        me.size = sizeof(me);
-        if(send(sockfd, (void *)&me, sizeof(struct sending),0) == -1)
+        me.size = sizeof(me);*/
+		data_packet.number = i;
+        if(send(sockfd, (void *)&data_packet, sizeof(struct tcp_data_packet),0) == -1)
             printf("TCP_client: send error with package number %d\n", i);
         else {
             count++;
