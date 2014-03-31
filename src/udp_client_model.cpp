@@ -155,7 +155,7 @@ void UdpClientModel::sendDataStream() {
 	printf("UDP_client: start data stream\n");
 	for (int i = 0; i < packet_count; i++) {
 		sendDataPacket(i);
-		printf("UDP_client: packet [%d] sent..\n", i);
+		//printf("UDP_client: packet [%d] sent..\n", i);
 	}
 	printf("UDP_client: end data stream\n");
 }

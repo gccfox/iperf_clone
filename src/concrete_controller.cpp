@@ -187,6 +187,7 @@ void ConcreteController::parsingArguments(int argc, char **argv, model_configura
 					exit(1);
 				} 
 				printf ("Port now :%d\n",mo->port);
+				break;
 
 
 			case 'j':
@@ -202,7 +203,6 @@ void ConcreteController::parsingArguments(int argc, char **argv, model_configura
 				printf ("Sytem port now :%d\n",mo->system_port);
 				break;
 
-			break;
 
 
 			case 'i':
